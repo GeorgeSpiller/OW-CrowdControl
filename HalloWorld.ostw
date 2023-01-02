@@ -1,5 +1,12 @@
  
 import "CustomGameSettings.json";
+
+public Boolean Test()
+{
+    Player p = HostPlayer();
+    return p.IsButtonHeld(Button.Interact);
+    
+}
  
 rule: "Setup"
 {
@@ -11,7 +18,18 @@ rule: "Setup"
         Spectators    : Spectators.VisibleAlways,
         SortOrder     : 2
     );
-    CreateHudText(AllPlayers(), Text: "This is some test text!", Location: Location.Left, SortOrder: 1);
+    CreateHudText(AllPlayers(), Text: "This is some sick text!", Location: Location.Left, SortOrder: 1);
 }
 
- 
+ rule: "Test"
+ Event.OngoingPlayer
+ Player.All
+ {
+    
+    if (Test())
+    {
+        CreateHudText(AllPlayers(),Text:"Spectator is pressing key",Spectators:Spectators.VisibleAlways, Location:Location.Left, SortOrder:0);
+    }
+    DestroyAllHudText();
+    
+ }
