@@ -3,6 +3,7 @@
         "All": {
             "Game Mode Start": "Immediately",
             "Hero Limit": "Off",
+            "Respawn As Random Hero": true,
             "Respawn Time Scalar": 0
         },
         "Skirmish": {
@@ -14,5 +15,5 @@
         "Max Team 1 Players": 5,
         "Max Team 2 Players": 5
     },
-    "Description": "Test Workshop Code!"
+    "Description": "Crowd Control Overwatch"
 }
