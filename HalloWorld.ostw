@@ -1,0 +1,22 @@
+ 
+
+ 
+rule: "Setup"
+{
+    CreateHudText(
+        VisibleTo     : AllPlayers(),
+        Subheader     : "Hallow World",
+        SubheaderColor: Color.Orange,
+        Location      : Location.Left,
+        Spectators    : Spectators.VisibleAlways,
+        SortOrder     : 2
+    );
+    CreateHudText(AllPlayers(), Text: "This is some test text!", Location: Location.Left, SortOrder: 1);
+    
+    SetObjectiveDescription(AllPlayers(), "♥", HudTextRev.VisibleToSortOrderAndString);
+    DisableCompletion();
+    SetMatchTime(0);
+    PauseMatchTime();
+}
+
+ 
