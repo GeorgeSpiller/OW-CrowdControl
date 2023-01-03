@@ -26,10 +26,13 @@ void MakeTextForNumberOfSeconds(define seconds, String text)
     
     ChaseVariableOverTime(ProgressBarCurrentProgress, 0, 10, TimeChaseReevaluation.DestinationAndDuration);
 
-    Wait(seconds);
+    WaitAsync(seconds, () => 
+    {
+        DestroyHudText(HUDTextID);
+        DestroyProgressBarHudText(ProgressBarID);
+    });
 
-    DestroyHudText(HUDTextID);
-    DestroyProgressBarHudText(ProgressBarID);
+    
 }
 
 
