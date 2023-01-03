@@ -6,12 +6,13 @@
             "Respawn Time Scalar": 0
         },
         "Skirmish": {
-            "Enabled": true
+            "Enabled": true,
+            "Enabled Maps": ["Rialto"]
         }
     },
     "Lobby": {
-        "Max Team 1 Players": 5,
+        "Max Team 1 Players": 6,
         "Max Team 2 Players": 5
     },
-    "Description": "I don't know anymore"
+    "Description": "Test Workshop Code!"
 }

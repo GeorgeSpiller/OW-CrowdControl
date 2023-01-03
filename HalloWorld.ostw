@@ -1,35 +1,65 @@
  
 import "CustomGameSettings.json";
 
-public Boolean Test()
+void WaitForHeroSelection(Player p)
 {
-    Player p = HostPlayer();
-    return p.IsButtonHeld(Button.Interact);
-    
-}
- 
-rule: "Setup"
-{
-    CreateHudText(
-        VisibleTo     : AllPlayers(),
-        Subheader     : "Hallo World",
-        SubheaderColor: Color.Orange,
-        Location      : Location.Left,
-        Spectators    : Spectators.VisibleAlways,
-        SortOrder     : 2
-    );
-    CreateHudText(AllPlayers(), Text: "This is some sick text!", Location: Location.Left, SortOrder: 1);
+    Boolean b = true;
+    while (b)
+    {
+        if (HasSpawned(p) && HeroOf(p)!=null && p.IsAlive())
+        {
+            
+            CreateHudText(AllPlayers(),Text:"in the routine",Spectators:Spectators.VisibleAlways, Location:Location.Left, SortOrder:3);
+            SetStatus(p,null,Status:Status.Invincible);
+            SetStatus(p,null,Status:Status.PhasedOut);
+            SetInvisible(p);
+            DisallowButton(p,Button.PrimaryFire);
+            DisallowButton(p,Button.SecondaryFire);
+            DisallowButton(p,Button.Ability1);
+            DisallowButton(p,Button.Ability2);
+            DisallowButton(p,Button.Ultimate);
+            SetMoveSpeed(p,500);
+            SetGravity(p,50);
+            SetJumpVerticalSpeed(p,150);
+            b = false;
+        }
+        Wait(0.250);
+    }
 }
 
+// rule: "Setup"
+// {
+//     CreateHudText(
+//         VisibleTo     : AllPlayers(),
+//         Subheader     : "Hallo World",
+//         SubheaderColor: Color.Orange,
+//         Location      : Location.Left,
+//         Spectators    : Spectators.VisibleAlways,
+//         SortOrder     : 2
+//     );
+//     CreateHudText(AllPlayers(), Text: "This is some sick text!", Location: Location.Left, SortOrder: 1);
+// }
+
  rule: "Test"
- Event.OngoingPlayer
- Player.All
+ Event.OngoingGlobal
  {
-    
-    if (Test())
+    CreateDummyBot(Hero.Bastion,Team.Team1,Position:FirstOf(SpawnPoints(Team.Team1)));
+ }
+
+ rule: "AnotherOne"
+ Event.OngoingPlayer
+ Player.Slot5
+ {
+    Player p = EventPlayer();
+    Player[] notme = RemoveFromArray(AllPlayers(),p);
+    CreateHudText(AllPlayers(),Text:"I AM ALIVEEEE",Spectators:Spectators.VisibleAlways, Location:Location.Left, SortOrder:3);
+    WaitForHeroSelection(p);
+    while (true)
     {
-        CreateHudText(AllPlayers(),Text:"Spectator is pressing key",Spectators:Spectators.VisibleAlways, Location:Location.Left, SortOrder:0);
+        if (p.IsButtonHeld(Button.PrimaryFire))
+        {
+            
+        }
+        Wait(0.250);
     }
-    DestroyAllHudText();
-    
  }
