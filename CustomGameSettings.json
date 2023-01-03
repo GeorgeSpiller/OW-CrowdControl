@@ -7,11 +7,11 @@
         },
         "Skirmish": {
             "Enabled": true,
-            "Enabled Maps": ["Lijiang Tower (Lunar New Year)", "Lijiang Tower"]
+            "Enabled Maps": ["Rialto"]
         }
     },
     "Lobby": {
-        "Max Team 1 Players": 5,
+        "Max Team 1 Players": 6,
         "Max Team 2 Players": 5
     },
     "Description": "Test Workshop Code!"

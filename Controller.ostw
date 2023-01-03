@@ -1,0 +1,54 @@
+import "CustomGameSettings.json";
+import "Effects.ostw";
+import "HUDController.ostw";
+
+
+void WaitForHeroSelection(Player p)
+{
+    Boolean b = true;
+    while (b)
+    {
+        if (HasSpawned(p) && HeroOf(p)!=null && p.IsAlive())
+        {
+            SetStatus(p,null,Status:Status.Invincible);
+            SetStatus(p,null,Status:Status.PhasedOut);
+            SetInvisible(p);
+            DisallowButton(p,Button.PrimaryFire);
+            DisallowButton(p,Button.SecondaryFire);
+            DisallowButton(p,Button.Ability1);
+            DisallowButton(p,Button.Ability2);
+            DisallowButton(p,Button.Ultimate);
+            // SetMoveSpeed(p,500);
+            // SetGravity(p,50);
+            // SetJumpVerticalSpeed(p,150);
+            b = false;
+        }
+        Wait(0.250);
+    }
+}
+
+ rule: "AnotherOne"
+ Event.OngoingPlayer
+ Player.Slot5
+ {
+    Player p = EventPlayer();
+    // Player[] notme = RemoveFromArray(AllPlayers(), p);
+    WaitForHeroSelection(p);
+    
+    while (true)
+    {
+        if (p.IsButtonHeld(Button.Crouch) && p.IsButtonHeld(Button.PrimaryFire))
+        {
+            // the async! means that the subroutine is called asyncronously, and that if its already executing it will do nothing.
+            async! DoubleSpeed();   
+        } else if (p.IsButtonHeld(Button.Crouch) && p.IsButtonHeld(Button.SecondaryFire)) 
+        {
+
+        } else if (p.IsButtonHeld(Button.Crouch) && p.IsButtonHeld(Button.Ability1)) 
+        {
+
+        }
+        Wait(0.250);
+    }
+ }
+
