@@ -18,6 +18,7 @@ void WaitForHeroSelection(Player p)
             DisallowButton(p,Button.Ability1);
             DisallowButton(p,Button.Ability2);
             DisallowButton(p,Button.Ultimate);
+            DisallowButton(p,Button.Melee);
             // SetMoveSpeed(p,500);
             // SetGravity(p,50);
             // SetJumpVerticalSpeed(p,150);
@@ -43,10 +44,10 @@ void WaitForHeroSelection(Player p)
             async! DoubleSpeed();   
         } else if (p.IsButtonHeld(Button.Crouch) && p.IsButtonHeld(Button.SecondaryFire)) 
         {
-
+            async! LowGravity();
         } else if (p.IsButtonHeld(Button.Crouch) && p.IsButtonHeld(Button.Ability1)) 
         {
-
+            async! ZeroGravity();
         }
         Wait(0.250);
     }

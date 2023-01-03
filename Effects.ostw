@@ -14,12 +14,15 @@ void LowGravity() "LowGravity" // Adding ! when calling will do nothing if it is
     MakeTextForNumberOfSeconds(10, "Low Gravity! (10s)");
     SetGravity(AllPlayers(), 50);
     Wait(10);   // wait 10 seconds
-    SetMoveSpeed(AllPlayers(), 100);
+    SetGravity(AllPlayers(), 100);
 }
 
-void AllUltimates() "ZeroGravity" // Adding ! when calling will do nothing if it is already executing.
+void ZeroGravity() "ZeroGravity" // Adding ! when calling will do nothing if it is already executing.
 {
-    MakeTextForNumberOfSeconds(10, "Double Speed! (10s)");
+    MakeTextForNumberOfSeconds(10, "No Gravity! (10s)");
+    SetGravity(AllPlayers(),0);
+    Wait(10);
+    SetGravity(AllPlayers(),100);
     // ect.
 }
 
