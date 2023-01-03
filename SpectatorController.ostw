@@ -1,0 +1,47 @@
+import "CustomGameSettings.json";
+
+void DisplayHUDText( String displayText ) "Display HUD Message To Spectator"
+{
+    CreateHudText(
+        VisibleTo     : AllPlayers(),
+        Header        : IconString(Icon.Spiral),
+        HeaderColor   : Color.Orange,
+        Subheader     : displayText,
+        SubheaderColor: Color.Turquoise,
+        Text          : displayText,
+        TextColor     : Color.Green,
+        Location      : Location.Top,
+        SortOrder     : 1,
+        Spectators    : Spectators.VisibleAlways
+    );
+}
+
+
+rule: "Spectator Input Handeler"
+Event.OngoingPlayer
+if ( Not( EntityExists(EventPlayer())) ) // if player is in spectator: (https://workshop.codes/wiki/articles/get+input+from+a+spectator)
+{   
+    // button mapping for spectator is weird, Buttons may not be the same as their name sujests (see link above)
+    
+    if (IsButtonHeld(EventPlayer(), Button.PrimaryFire) && IsButtonHeld(EventPlayer(), Button.Ability1)) 
+    {   // Move Slow (default Control) + Move Down (default Q)
+        DisplayHUDText("Move Slow (default Control) + Move Down (default Q)");
+    } else if (IsButtonHeld(EventPlayer(), Button.PrimaryFire) && IsButtonHeld(EventPlayer(), Button.Interact)) 
+    {   // Move Slow (default Control) + Move Up (default E)
+        DisplayHUDText("Move Slow (default Control) + Move Up (default E)");
+    } else if (IsButtonHeld(EventPlayer(), Button.SecondaryFire) && IsButtonHeld(EventPlayer(), Button.Ability1)) 
+    {   // Move Fast (default Shift) + Move Down (default Q)
+        DisplayHUDText("Move Fast (default Shift) + Move Down (default Q)");
+    } else if (IsButtonHeld(EventPlayer(), Button.SecondaryFire) && IsButtonHeld(EventPlayer(), Button.Interact)) 
+    {    // Move Fast (default Shift) + Move Up (default E)
+        DisplayHUDText("Move Fast (default Shift) + Move Up (default E)");
+    } else 
+    {
+        // invalid 
+        DisplayHUDText("Unknown button combo");
+    }
+
+}
+
+
+
