@@ -1,0 +1,25 @@
+import "HUDController.ostw";
+
+
+void DoubleSpeed() "DoubleSpeed" // Adding ! when calling will do nothing if it is already executing.
+{
+    MakeTextForNumberOfSeconds(10, "Double Speed! (10s)");
+    SetMoveSpeed(AllPlayers(), 200);
+    Wait(10);   // wait 10 seconds
+    SetMoveSpeed(AllPlayers(), 100);
+}
+
+void LowGravity() "LowGravity" // Adding ! when calling will do nothing if it is already executing.
+{
+    MakeTextForNumberOfSeconds(10, "Low Gravity! (10s)");
+    SetGravity(AllPlayers(), 50);
+    Wait(10);   // wait 10 seconds
+    SetMoveSpeed(AllPlayers(), 100);
+}
+
+void AllUltimates() "ZeroGravity" // Adding ! when calling will do nothing if it is already executing.
+{
+    MakeTextForNumberOfSeconds(10, "Double Speed! (10s)");
+    // ect.
+}
+

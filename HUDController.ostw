@@ -1,0 +1,35 @@
+
+
+void MakeTextForNumberOfSeconds(define seconds, String text)
+{
+    CreateHudText(
+        VisibleTo: AllPlayers(),
+        Header   : IconString(Icon.Bolt),
+        Text     : text,
+        TextColor: Color.SkyBlue
+    );
+    define HUDTextID = LastTextID();
+
+    define ProgressBarCurrentProgress = 100;
+    CreateProgressBarHudText(
+        VisibleTo: AllPlayers(),
+        Value: ProgressBarCurrentProgress,
+        Text: text,
+        Location: Location.Top,
+        SortOrder: 3,
+        ProgressBarColor: Color.Aqua,
+        TextColor: Color.Gray,
+        Reevaluation: ProgressBarHudEvaluation.Values,
+        NonteamSpectators: Spectators.VisibleAlways
+    );
+    define ProgressBarID = LastTextID();
+    
+    ChaseVariableOverTime(ProgressBarCurrentProgress, 0, 10, TimeChaseReevaluation.DestinationAndDuration);
+
+    Wait(seconds);
+
+    DestroyHudText(HUDTextID);
+    DestroyProgressBarHudText(ProgressBarID);
+}
+
+
