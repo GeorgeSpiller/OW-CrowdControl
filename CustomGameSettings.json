@@ -3,10 +3,10 @@
         "All": {
             "Game Mode Start": "Immediately",
             "Hero Limit": "Off",
-            "Respawn Time Scalar": 0
+            "Respawn Time Scalar": 5
         },
         "Skirmish": {
-            "Enabled": true,
+            "Enabled": false,
             "Enabled Maps": ["Rialto"]
         }
     },

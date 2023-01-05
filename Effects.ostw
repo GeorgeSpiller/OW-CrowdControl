@@ -1,25 +1,28 @@
 import "HUDController.ostw";
 
 
-void DoubleSpeed() "DoubleSpeed" // Adding ! when calling will do nothing if it is already executing.
+void DoubleSpeed() "Apply Double Speed Action" // Adding ! when calling will do nothing if it is already executing.
 {
-    MakeTextForNumberOfSeconds(10, "Double Speed! (10s)");
+    MakeTextForNumberOfSeconds(10, "Double Speed (10s)");
     SetMoveSpeed(AllPlayers(), 200);
     Wait(10);   // wait 10 seconds
     SetMoveSpeed(AllPlayers(), 100);
 }
 
-void LowGravity() "LowGravity" // Adding ! when calling will do nothing if it is already executing.
+void LowGravity() "Apply Low Gravity Action" // Adding ! when calling will do nothing if it is already executing.
 {
-    MakeTextForNumberOfSeconds(10, "Low Gravity! (10s)");
+    MakeTextForNumberOfSeconds(10, "Low Gravity (10s)");
     SetGravity(AllPlayers(), 50);
     Wait(10);   // wait 10 seconds
-    SetMoveSpeed(AllPlayers(), 100);
+    SetGravity(AllPlayers(), 100);
 }
 
-void AllUltimates() "ZeroGravity" // Adding ! when calling will do nothing if it is already executing.
+void GiveUltimate() "Apply Give Ultimate Action" // Mostly used to debug, as this is a very visable action to the player in slot5
 {
-    MakeTextForNumberOfSeconds(10, "Double Speed! (10s)");
-    // ect.
+    SetUltimateCharge(AllPlayers(), 0);
+    MakeTextForNumberOfSeconds(10, "Give Ultimate (10s)");
+    SetUltimateCharge(AllPlayers(), 100);
+    Wait(10);   // wait 10 seconds
+    SetUltimateCharge(AllPlayers(), 0);
 }
 

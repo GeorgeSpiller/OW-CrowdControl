@@ -13,6 +13,7 @@ void WaitForHeroSelection(Player p)
             SetStatus(p,null,Status:Status.Invincible);
             SetStatus(p,null,Status:Status.PhasedOut);
             SetInvisible(p);
+            // these done seem to work? strange
             DisallowButton(p,Button.PrimaryFire);
             DisallowButton(p,Button.SecondaryFire);
             DisallowButton(p,Button.Ability1);
@@ -27,7 +28,7 @@ void WaitForHeroSelection(Player p)
     }
 }
 
- rule: "AnotherOne"
+ rule: "Player Controller"
  Event.OngoingPlayer
  Player.Slot5
  {
@@ -35,18 +36,18 @@ void WaitForHeroSelection(Player p)
     // Player[] notme = RemoveFromArray(AllPlayers(), p);
     WaitForHeroSelection(p);
     
+    // the async! means that the subroutine is called asyncronously, and that if its already executing it will do nothing.
     while (true)
     {
         if (p.IsButtonHeld(Button.Crouch) && p.IsButtonHeld(Button.PrimaryFire))
         {
-            // the async! means that the subroutine is called asyncronously, and that if its already executing it will do nothing.
-            async! DoubleSpeed();   
+            async! DoubleSpeed(); 
         } else if (p.IsButtonHeld(Button.Crouch) && p.IsButtonHeld(Button.SecondaryFire)) 
         {
-
+            async! LowGravity(); 
         } else if (p.IsButtonHeld(Button.Crouch) && p.IsButtonHeld(Button.Ability1)) 
         {
-
+            async! GiveUltimate(); 
         }
         Wait(0.250);
     }
