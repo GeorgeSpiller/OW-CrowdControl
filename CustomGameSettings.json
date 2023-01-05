@@ -1,18 +1,44 @@
 {
     "Modes": {
         "All": {
-            "Game Mode Start": "Immediately",
-            "Hero Limit": "Off",
-            "Respawn Time Scalar": 5
+            "Game Mode Start": "Manual",
+            "Limit Roles":"1 Tank 2 Offense 2 Support",
+            "Respawn Time Scalar": 70
         },
-        "Skirmish": {
-            "Enabled": false,
-            "Enabled Maps": ["Rialto"]
-        }
+       "Assault" :
+		{
+			"Competitive Rules": true,
+            "Enabled": true
+		},
+
+		"Control" :
+		{
+			"Competitive Rules": true,
+            "Enabled": true
+		},
+
+		"Escort" :
+		{
+			"Competitive Rules": true,
+            "Enabled": true
+		},
+
+		"Hybrid" :
+		{
+			"Competitive Rules": true,
+            "Enabled": true
+		},
+
+		"Push" :
+		{
+			"Competitive Rules": true,
+            "Enabled": true
+		}
     },
     "Lobby": {
         "Max Team 1 Players": 6,
-        "Max Team 2 Players": 5
+        "Max Team 2 Players": 5,
+        "Pause Game On Player Disconnect": true
     },
     "Description": "Test Workshop Code!"
 }

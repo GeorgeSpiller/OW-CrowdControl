@@ -1,4 +1,4 @@
-import "CustomGameSettings.json";
+import "CustomGameSettings.json";   // OSTW lib outdated: "Limit Roles":"1 Tank 2 Offense 2 Support" is a valid config
 import "Effects.ostw";
 import "HUDController.ostw";
 
