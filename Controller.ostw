@@ -1,4 +1,5 @@
-import "CustomGameSettings.json";   // OSTW lib outdated: "Limit Roles":"1 Tank 2 Offense 2 Support" is a valid config
+import "DebugGameSettings.json";
+// import "CompetitiveGameSettings.json";  // OSTW lib outdated: "Limit Roles":"1 Tank 2 Offense 2 Support" is a valid config
 import "Effects.ostw";
 import "HUDController.ostw";
 
@@ -10,10 +11,9 @@ void WaitForHeroSelection(Player p)
     {
         if (HasSpawned(p) && HeroOf(p)!=null && p.IsAlive())
         {
-            SetStatus(p,null,Status:Status.Invincible);
-            SetStatus(p,null,Status:Status.PhasedOut);
-            SetInvisible(p);
-            // these done seem to work? strange
+            SetStatus(p, null, Status.Invincible, 9999);
+            SetStatus(p, null, Status.PhasedOut, 9999);
+            SetInvisible(p, InvisibleTo.All);
             DisallowButton(p,Button.PrimaryFire);
             DisallowButton(p,Button.SecondaryFire);
             DisallowButton(p,Button.Ability1);
@@ -23,6 +23,7 @@ void WaitForHeroSelection(Player p)
             // SetGravity(p,50);
             // SetJumpVerticalSpeed(p,150);
             b = false;
+
         }
         Wait(0.250);
     }
@@ -41,13 +42,13 @@ void WaitForHeroSelection(Player p)
     {
         if (p.IsButtonHeld(Button.Crouch) && p.IsButtonHeld(Button.PrimaryFire))
         {
-            async! DoubleSpeed(); 
+            async! DoubleSpeedDoubleDamage(); 
         } else if (p.IsButtonHeld(Button.Crouch) && p.IsButtonHeld(Button.SecondaryFire)) 
         {
-            async! LowGravity(); 
+            async! SlowMotionLowGravity(); 
         } else if (p.IsButtonHeld(Button.Crouch) && p.IsButtonHeld(Button.Ability1)) 
         {
-            async! GiveUltimate(); 
+            async! ForceUltimate(); 
         }
         Wait(0.250);
     }

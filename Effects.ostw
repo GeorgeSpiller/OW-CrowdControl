@@ -1,28 +1,35 @@
 import "HUDController.ostw";
 
 
-void DoubleSpeed() "Apply Double Speed Action" // Adding ! when calling will do nothing if it is already executing.
+void DoubleSpeedDoubleDamage() "Apply Double Speed and Double Damage Action" // Adding ! when calling will do nothing if it is already executing.
 {
-    MakeTextForNumberOfSeconds(10, "Double Speed (10s)");
+    MakeTextForNumberOfSeconds(10, "Double Speed, Double Damage (10s)");
     SetMoveSpeed(AllPlayers(), 200);
+    SetDamageDealt(AllPlayers(), 200);
     Wait(10);   // wait 10 seconds
     SetMoveSpeed(AllPlayers(), 100);
+    SetDamageDealt(AllPlayers(), 100);
 }
 
-void LowGravity() "Apply Low Gravity Action" // Adding ! when calling will do nothing if it is already executing.
+void SlowMotionLowGravity() "Apply Slow Motion, Low Gravity Action" // Adding ! when calling will do nothing if it is already executing.
 {
-    MakeTextForNumberOfSeconds(10, "Low Gravity (10s)");
+    MakeTextForNumberOfSeconds(10, "Slow Motion, Low Gravity (10s)");
     SetGravity(AllPlayers(), 50);
+    SetSlowMotion(50);
     Wait(10);   // wait 10 seconds
     SetGravity(AllPlayers(), 100);
+    SetSlowMotion(100);
 }
 
-void GiveUltimate() "Apply Give Ultimate Action" // Mostly used to debug, as this is a very visable action to the player in slot5
+void ForceUltimate() "Apply Force Ultimate Action" // Mostly used to debug, as this is a very visable action to the player in slot5
 {
-    SetUltimateCharge(AllPlayers(), 0);
-    MakeTextForNumberOfSeconds(10, "Give Ultimate (10s)");
+    MakeTextForNumberOfSeconds(5, "Force Ultimates for everyone");
     SetUltimateCharge(AllPlayers(), 100);
-    Wait(10);   // wait 10 seconds
-    SetUltimateCharge(AllPlayers(), 0);
+    Wait(0.250);
+    PressButton(AllPlayers(), Button.Ultimate);
+    Wait(4.750);
+    PressButton(AllPlayers(), Button.PrimaryFire);
+    Wait(0.250);
+    SetUltimateCharge(AllPlayers(), 0); // just in case 
 }
 

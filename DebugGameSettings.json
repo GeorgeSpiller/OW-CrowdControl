@@ -1,0 +1,18 @@
+{
+    "Modes": {
+        "All": {
+            "Game Mode Start": "Manual",
+            "Respawn Time Scalar": 70
+        },
+        "Skirmish": {
+            "Enabled": true,
+            "Enabled Maps": ["Rialto"]
+        }
+    },
+    "Lobby": {
+        "Max Team 1 Players": 6,
+        "Max Team 2 Players": 5,
+        "Pause Game On Player Disconnect": true
+    },
+    "Description": "Test Workshop Code!"
+}
