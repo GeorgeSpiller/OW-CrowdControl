@@ -3,7 +3,7 @@ import "HUDController.ostw";
 
 void DoubleSpeedDoubleDamage() "Apply Double Speed and Double Damage Action" // Adding ! when calling will do nothing if it is already executing.
 {
-    MakeTextForNumberOfSeconds(10, "Double Speed, Double Damage (10s)");
+    EffectText(10, "Double Speed, Double Damage (10s)");
     SetMoveSpeed(AllPlayers(), 200);
     SetDamageDealt(AllPlayers(), 200);
     Wait(10);   // wait 10 seconds
@@ -13,7 +13,7 @@ void DoubleSpeedDoubleDamage() "Apply Double Speed and Double Damage Action" // 
 
 void SlowMotionLowGravity() "Apply Slow Motion, Low Gravity Action" // Adding ! when calling will do nothing if it is already executing.
 {
-    MakeTextForNumberOfSeconds(10, "Slow Motion, Low Gravity (10s)");
+    EffectText(10, "Slow Motion, Low Gravity (10s)");
     SetGravity(AllPlayers(), 50);
     SetSlowMotion(50);
     Wait(10);   // wait 10 seconds
@@ -23,13 +23,32 @@ void SlowMotionLowGravity() "Apply Slow Motion, Low Gravity Action" // Adding ! 
 
 void ForceUltimate() "Apply Force Ultimate Action" // Mostly used to debug, as this is a very visable action to the player in slot5
 {
-    MakeTextForNumberOfSeconds(5, "Force Ultimates for everyone");
+    EffectText(5, "Force Ultimates for everyone");
+    // save the ultimate charge percentage of all players
+    Number[] PlayerUltimatePerentages;
+    Number[] HUD_IDs;
+    Player currentPlayer;
+    for (define i = 0; CountOf(AllPlayers()); 1)
+    {
+        currentPlayer = AllPlayers()[i];
+        // idk how to append to array? strange
+        ModifyVariable(PlayerUltimatePerentages, Operation.AppendToArray, 0);
+        PlayerUltimatePerentages[i] = UltimateChargePercent(currentPlayer);
+        Wait(0.250);
+    }
+    
     SetUltimateCharge(AllPlayers(), 100);
     Wait(0.250);
     PressButton(AllPlayers(), Button.Ultimate);
-    Wait(4.750);
+    //Wait(4.750);
     PressButton(AllPlayers(), Button.PrimaryFire);
     Wait(0.250);
-    SetUltimateCharge(AllPlayers(), 0); // just in case 
+    // reset the ultimate charge percentate of all players
+    for (define i = 0; i < AllPlayers().Length; i++)
+    {
+        currentPlayer = AllPlayers()[i];
+        SetUltimateCharge(currentPlayer, PlayerUltimatePerentages[i]); 
+        DestroyHudText(HUD_IDs[i]);
+    }
 }
 

@@ -1,15 +1,8 @@
 
 
-void MakeTextForNumberOfSeconds(define seconds, String text)
+void EffectText(define seconds, String text)
 {
-    //CreateHudText(
-    //    VisibleTo: AllPlayers(),
-    //    Header   : IconString(Icon.Bolt),
-    //    Text     : text,
-    //    TextColor: Color.SkyBlue
-    //);
-    //define HUDTextID = LastTextID();
-
+    
     define ProgressBarCurrentProgress = 100;
     CreateProgressBarHudText(
         VisibleTo: AllPlayers(),
@@ -31,7 +24,17 @@ void MakeTextForNumberOfSeconds(define seconds, String text)
         //DestroyHudText(HUDTextID);
         DestroyProgressBarHudText(ProgressBarID);
     });
-
 }
 
+
+// void ControllerButtonPressed(Button b) 
+// {
+//     //CreateHudText(
+//     //    VisibleTo: AllPlayers(),
+//     //    Header   : IconString(Icon.Bolt),
+//     //    Text     : text,
+//     //    TextColor: Color.SkyBlue
+//     //);
+//     //define HUDTextID = LastTextID();
+// }
 

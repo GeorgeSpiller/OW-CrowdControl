@@ -11,19 +11,18 @@ void WaitForHeroSelection(Player p)
     {
         if (HasSpawned(p) && HeroOf(p)!=null && p.IsAlive())
         {
-            SetStatus(p, null, Status.Invincible, 9999);
-            SetStatus(p, null, Status.PhasedOut, 9999);
-            SetInvisible(p, InvisibleTo.All);
-            DisallowButton(p,Button.PrimaryFire);
-            DisallowButton(p,Button.SecondaryFire);
-            DisallowButton(p,Button.Ability1);
-            DisallowButton(p,Button.Ability2);
-            DisallowButton(p,Button.Ultimate);
+            // SetStatus(p, null, Status.Invincible, 9999);
+            // SetStatus(p, null, Status.PhasedOut, 9999);
+            // SetInvisible(p, InvisibleTo.All);
+            // DisallowButton(p,Button.PrimaryFire);
+            // DisallowButton(p,Button.SecondaryFire);
+            // DisallowButton(p,Button.Ability1);
+            // DisallowButton(p,Button.Ability2);
+            // DisallowButton(p,Button.Ultimate);
             // SetMoveSpeed(p,500);
             // SetGravity(p,50);
             // SetJumpVerticalSpeed(p,150);
             b = false;
-
         }
         Wait(0.250);
     }
@@ -34,22 +33,25 @@ void WaitForHeroSelection(Player p)
  Player.Slot5
  {
     Player p = EventPlayer();
-    // Player[] notme = RemoveFromArray(AllPlayers(), p);
     WaitForHeroSelection(p);
     
     // the async! means that the subroutine is called asyncronously, and that if its already executing it will do nothing.
     while (true)
     {
-        if (p.IsButtonHeld(Button.Crouch) && p.IsButtonHeld(Button.PrimaryFire))
+        if (p.IsButtonHeld(Button.Crouch)) 
         {
-            async! DoubleSpeedDoubleDamage(); 
-        } else if (p.IsButtonHeld(Button.Crouch) && p.IsButtonHeld(Button.SecondaryFire)) 
-        {
-            async! SlowMotionLowGravity(); 
-        } else if (p.IsButtonHeld(Button.Crouch) && p.IsButtonHeld(Button.Ability1)) 
-        {
-            async! ForceUltimate(); 
+            if (p.IsButtonHeld(Button.PrimaryFire))
+            {
+                async! DoubleSpeedDoubleDamage(); 
+            } else if (p.IsButtonHeld(Button.SecondaryFire)) 
+            {
+                async! SlowMotionLowGravity(); 
+            } else if (p.IsButtonHeld(Button.Ability1)) 
+            {
+                async! ForceUltimate(); 
+            }
         }
+
         Wait(0.250);
     }
  }
