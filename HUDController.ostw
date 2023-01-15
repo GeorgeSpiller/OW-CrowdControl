@@ -1,4 +1,4 @@
-
+import "Controller.ostw";
 
 void EffectText(define seconds, String text)
 {
@@ -17,9 +17,9 @@ void EffectText(define seconds, String text)
     );
     define ProgressBarID = LastTextID();
     
-    ChaseVariableOverTime(ProgressBarCurrentProgress, 0, 10, TimeChaseReevaluation.DestinationAndDuration);
+    ChaseVariableOverTime(ProgressBarCurrentProgress, 0, seconds, TimeChaseReevaluation.DestinationAndDuration);
 
-     WaitAsync(seconds, () => 
+    WaitAsync(seconds, () => 
     {
         //DestroyHudText(HUDTextID);
         DestroyProgressBarHudText(ProgressBarID);
@@ -27,14 +27,46 @@ void EffectText(define seconds, String text)
 }
 
 
-// void ControllerButtonPressed(Button b) 
-// {
-//     //CreateHudText(
-//     //    VisibleTo: AllPlayers(),
-//     //    Header   : IconString(Icon.Bolt),
-//     //    Text     : text,
-//     //    TextColor: Color.SkyBlue
-//     //);
-//     //define HUDTextID = LastTextID();
-// }
+
+void DisplayInputs(Player p) 
+{
+
+    // Button.Crouch
+    if (p.IsButtonHeld(Button.Crouch) )
+    {
+        commandButtonsPressed[0] = "Crouch";
+    } else
+    {
+        ModifyVariable(commandButtonsPressed, Operation.RemoveFromArrayByValue, "Crouch");
+    }
+
+    // Button.Ability1
+    if (p.IsButtonHeld(Button.Ability1) )
+    {
+        commandButtonsPressed[1] = "Ability1";
+    } else
+    {
+        ModifyVariable(commandButtonsPressed, Operation.RemoveFromArrayByValue, "Ability1");
+    }
+
+        // Button.Ability2
+    if (p.IsButtonHeld(Button.Ability2) )
+    {
+        commandButtonsPressed[1] = "Ability2";
+    } else
+    {
+        ModifyVariable(commandButtonsPressed, Operation.RemoveFromArrayByValue, "Ability2");
+    }
+
+        // Button.Interact
+    if (p.IsButtonHeld(Button.Interact) )
+    {
+        commandButtonsPressed[1] = "Interact";
+    } else
+    {
+        ModifyVariable(commandButtonsPressed, Operation.RemoveFromArrayByValue, "Interact");
+    }
+
+
+}
 

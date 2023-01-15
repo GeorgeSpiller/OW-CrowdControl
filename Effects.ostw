@@ -13,10 +13,10 @@ void DoubleSpeedDoubleDamage() "Apply Double Speed and Double Damage Action" // 
 
 void SlowMotionLowGravity() "Apply Slow Motion, Low Gravity Action" // Adding ! when calling will do nothing if it is already executing.
 {
-    EffectText(10, "Slow Motion, Low Gravity (10s)");
+    EffectText(5, "Slow Motion, Low Gravity (10s)");
     SetGravity(AllPlayers(), 50);
     SetSlowMotion(50);
-    Wait(10);   // wait 10 seconds
+    Wait(5);   // wait only 5 seconds, as time is slowed for 50%, this includes the timer, so 5s slowed = 10s irl
     SetGravity(AllPlayers(), 100);
     SetSlowMotion(100);
 }
@@ -26,7 +26,6 @@ void ForceUltimate() "Apply Force Ultimate Action" // Mostly used to debug, as t
     EffectText(5, "Force Ultimates for everyone");
     // save the ultimate charge percentage of all players
     Number[] PlayerUltimatePerentages;
-    Number[] HUD_IDs;
     Player currentPlayer;
     for (define i = 0; CountOf(AllPlayers()); 1)
     {
@@ -38,17 +37,14 @@ void ForceUltimate() "Apply Force Ultimate Action" // Mostly used to debug, as t
     }
     
     SetUltimateCharge(AllPlayers(), 100);
-    Wait(0.250);
     PressButton(AllPlayers(), Button.Ultimate);
-    //Wait(4.750);
+    Wait(4);
     PressButton(AllPlayers(), Button.PrimaryFire);
-    Wait(0.250);
     // reset the ultimate charge percentate of all players
     for (define i = 0; i < AllPlayers().Length; i++)
     {
         currentPlayer = AllPlayers()[i];
         SetUltimateCharge(currentPlayer, PlayerUltimatePerentages[i]); 
-        DestroyHudText(HUD_IDs[i]);
     }
 }
 

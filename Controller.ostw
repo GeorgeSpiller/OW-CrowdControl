@@ -3,6 +3,7 @@ import "DebugGameSettings.json";
 import "Effects.ostw";
 import "HUDController.ostw";
 
+globalvar String[] commandButtonsPressed;
 
 void WaitForHeroSelection(Player p)
 {
@@ -11,14 +12,14 @@ void WaitForHeroSelection(Player p)
     {
         if (HasSpawned(p) && HeroOf(p)!=null && p.IsAlive())
         {
-            // SetStatus(p, null, Status.Invincible, 9999);
-            // SetStatus(p, null, Status.PhasedOut, 9999);
-            // SetInvisible(p, InvisibleTo.All);
-            // DisallowButton(p,Button.PrimaryFire);
-            // DisallowButton(p,Button.SecondaryFire);
-            // DisallowButton(p,Button.Ability1);
-            // DisallowButton(p,Button.Ability2);
-            // DisallowButton(p,Button.Ultimate);
+            SetStatus(p, null, Status.Invincible, 9999);
+            SetStatus(p, null, Status.PhasedOut, 9999);
+            SetInvisible(p, InvisibleTo.All);
+            DisallowButton(p,Button.PrimaryFire);
+            DisallowButton(p,Button.SecondaryFire);
+            DisallowButton(p,Button.Ability1);
+            DisallowButton(p,Button.Ability2);
+            DisallowButton(p,Button.Ultimate);
             // SetMoveSpeed(p,500);
             // SetGravity(p,50);
             // SetJumpVerticalSpeed(p,150);
@@ -32,21 +33,31 @@ void WaitForHeroSelection(Player p)
  Event.OngoingPlayer
  Player.Slot5
  {
+    CreateHudText(
+       VisibleTo: AllPlayers(),
+       Header   : IconString(Icon.Warning),
+       Subheader: " Press Crouch + <button> to Activate Effect",
+       Text     : " Ability1 : Double Time" +
+                  "\n Ability2 : Slow_down" +
+                  "\n Interact : Ultimate",
+       TextColor: Color.SkyBlue
+    );
+
     Player p = EventPlayer();
     WaitForHeroSelection(p);
-    
     // the async! means that the subroutine is called asyncronously, and that if its already executing it will do nothing.
     while (true)
     {
-        if (p.IsButtonHeld(Button.Crouch)) 
+        DisplayInputs(EventPlayer());
+        if (p.IsButtonHeld(Button.Crouch) ) 
         {
-            if (p.IsButtonHeld(Button.PrimaryFire))
+            if (p.IsButtonHeld(Button.Ability1))
             {
                 async! DoubleSpeedDoubleDamage(); 
-            } else if (p.IsButtonHeld(Button.SecondaryFire)) 
+            } else if (p.IsButtonHeld(Button.Ability2)) 
             {
                 async! SlowMotionLowGravity(); 
-            } else if (p.IsButtonHeld(Button.Ability1)) 
+            } else if (p.IsButtonHeld(Button.Interact)) 
             {
                 async! ForceUltimate(); 
             }
