@@ -11,4 +11,7 @@ Once the .zip has been downloaded and extracted, and the extention is installed,
 Once thats setup you should see some syntax highlighting! Inorder to import code into Overwatch, It must have a settings array as the header. In this project, this information is stored in ``CustomGameSettings.json``. Now you simply follow the rest of the Getting Started, coppy the formatted code, and the paste button should appear in overwatch.  
 
 
-
+TODO:
+hud not working?
+ult force echo and anna add force look
+double speed - ability cooldowns as well
