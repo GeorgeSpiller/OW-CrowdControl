@@ -11,7 +11,7 @@
     },
     "Lobby": {
         "Max Team 1 Players": 6,
-        "Max Team 2 Players": 5,
+        "Max Team 2 Players": 6,
         "Pause Game On Player Disconnect": true
     },
     "Description": "Test Workshop Code!"

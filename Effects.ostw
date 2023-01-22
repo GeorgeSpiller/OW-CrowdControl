@@ -4,6 +4,7 @@ import "HUDController.ostw";
 void DoubleSpeedDoubleDamage() "Apply Double Speed and Double Damage Action" // Adding ! when calling will do nothing if it is already executing.
 {
     EffectText(10, "Double Speed, Double Damage (10s)");
+    // start the double sped double damage
     SetMoveSpeed(AllPlayers(), 200);
     SetDamageDealt(AllPlayers(), 200);
     Wait(10);   // wait 10 seconds
@@ -13,42 +14,85 @@ void DoubleSpeedDoubleDamage() "Apply Double Speed and Double Damage Action" // 
 
 void SlowMotionLowGravity() "Apply Slow Motion, Low Gravity Action" // Adding ! when calling will do nothing if it is already executing.
 {
-    EffectText(10, "Slow Motion, Low Gravity (10s)");
+    EffectText(5, "Slow Motion, Low Gravity (10s)");
     SetGravity(AllPlayers(), 50);
     SetSlowMotion(50);
-    Wait(10);   // wait 10 seconds
+    SetAimSpeed(AllPlayers(), 50);
+    Wait(5);   // wait 10 seconds
     SetGravity(AllPlayers(), 100);
     SetSlowMotion(100);
+    SetAimSpeed(AllPlayers(), 100);
 }
 
-void ForceUltimate() "Apply Force Ultimate Action" // Mostly used to debug, as this is a very visable action to the player in slot5
+void ForceUltimate() "Apply Force Ultimate Action" // Adding ! when calling will do nothing if it is already executing.
 {
     EffectText(5, "Force Ultimates for everyone");
     // save the ultimate charge percentage of all players
     Number[] PlayerUltimatePerentages;
-    Number[] HUD_IDs;
     Player currentPlayer;
+    Player target;
     for (define i = 0; CountOf(AllPlayers()); 1)
     {
         currentPlayer = AllPlayers()[i];
-        // idk how to append to array? strange
-        ModifyVariable(PlayerUltimatePerentages, Operation.AppendToArray, 0);
         PlayerUltimatePerentages[i] = UltimateChargePercent(currentPlayer);
-        Wait(0.250);
+        // if player is ech or anna, force look at a relevant target
+        // if (currentPlayer.Hero() == Hero.Echo) 
+        // {
+        //     // get team opposite to echo
+        //     Team t;
+        //     if (TeamOf(currentPlayer) == Team.Team1)
+        //     {
+        //         t = Team.Team2;
+        //     } else 
+        //     {
+        //         t = Team.Team1;
+        //     }
+        //     target = PlayerClosestToReticle(currentPlayer, t);
+        //     StartFacing(currentPlayer, PositionOf(target));
+        // } else if(currentPlayer.Hero() == Hero.Ana) 
+        // {
+        //     StartFacing(currentPlayer, PlayerClosestToReticle(currentPlayer), 200, Relative.ToWorld);
+        // }
     }
     
     SetUltimateCharge(AllPlayers(), 100);
-    Wait(0.250);
     PressButton(AllPlayers(), Button.Ultimate);
-    //Wait(4.750);
+    Wait(10);
     PressButton(AllPlayers(), Button.PrimaryFire);
-    Wait(0.250);
+    StopFacing(AllPlayers());
     // reset the ultimate charge percentate of all players
     for (define i = 0; i < AllPlayers().Length; i++)
     {
         currentPlayer = AllPlayers()[i];
         SetUltimateCharge(currentPlayer, PlayerUltimatePerentages[i]); 
-        DestroyHudText(HUD_IDs[i]);
     }
 }
 
+
+// void MeteorShower() "Apply Meteor Shower Action" // Spawns Sigma rocks, junkrat promary fire, and tracer bombs 
+// {
+//     EffectText(10, "Meteor Shower");
+
+//     // spawn sigma, junkrat and tracer
+//     CreateDummyBot(Hero.Sigma, Team.Team2 , 5);
+
+//     // set to invisable/invulnerable
+//     // SetStatus(db_Sigma, null, Status.Invincible, 9999);
+//     // SetStatus(db_Sigma, null, Status.PhasedOut, 9999);
+//     // SetInvisible(db_Sigma, InvisibleTo.All);
+
+// }
+
+
+//  rule: "Bot Meteor Shower Controller"
+//  Event.OngoingPlayer
+//  if (IsDummyBot(EventPlayer()))
+//  if( HeroOf(EventPlayer()) == Hero.Sigma ) 
+//  {
+
+//     Teleport(EventPlayer(), ObjectivePosition());
+//     SetUltimateCharge(EventPlayer(), 100);
+//     PressButton(EventPlayer(), Button.Ultimate);
+//     Wait(5, WaitBehavior.IgnoreCondition);
+
+//  }

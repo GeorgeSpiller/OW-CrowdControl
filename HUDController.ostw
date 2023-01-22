@@ -2,13 +2,13 @@
 
 void EffectText(define seconds, String text)
 {
-    
+
     define ProgressBarCurrentProgress = 100;
     CreateProgressBarHudText(
         VisibleTo: AllPlayers(),
         Value: ProgressBarCurrentProgress,
-        Text: text,
-        Location: Location.Top,
+        Text: $"\n{text}",
+        Location: Location.Top ,
         SortOrder: 3,
         ProgressBarColor: Color.Aqua,
         TextColor: Color.Gray,
@@ -17,11 +17,10 @@ void EffectText(define seconds, String text)
     );
     define ProgressBarID = LastTextID();
     
-    ChaseVariableOverTime(ProgressBarCurrentProgress, 0, 10, TimeChaseReevaluation.DestinationAndDuration);
+    ChaseVariableOverTime(ProgressBarCurrentProgress, 0, seconds, TimeChaseReevaluation.DestinationAndDuration);
 
-     WaitAsync(seconds, () => 
+    WaitAsync(seconds, () => 
     {
-        //DestroyHudText(HUDTextID);
         DestroyProgressBarHudText(ProgressBarID);
     });
 }

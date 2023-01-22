@@ -1,58 +1,144 @@
 import "DebugGameSettings.json";
-// import "CompetitiveGameSettings.json";  // OSTW lib outdated: "Limit Roles":"1 Tank 2 Offense 2 Support" is a valid config
+//import "CompetitiveGameSettings.json";  // OSTW lib outdated: "Limit Roles":"1 Tank 2 Offense 2 Support" is a valid config
 import "Effects.ostw";
 import "HUDController.ostw";
 
 
-void WaitForHeroSelection(Player p)
-{
-    Boolean b = true;
-    while (b)
-    {
-        if (HasSpawned(p) && HeroOf(p)!=null && p.IsAlive())
-        {
-            // SetStatus(p, null, Status.Invincible, 9999);
-            // SetStatus(p, null, Status.PhasedOut, 9999);
-            // SetInvisible(p, InvisibleTo.All);
-            // DisallowButton(p,Button.PrimaryFire);
-            // DisallowButton(p,Button.SecondaryFire);
-            // DisallowButton(p,Button.Ability1);
-            // DisallowButton(p,Button.Ability2);
-            // DisallowButton(p,Button.Ultimate);
-            // SetMoveSpeed(p,500);
-            // SetGravity(p,50);
-            // SetJumpVerticalSpeed(p,150);
-            b = false;
-        }
-        Wait(0.250);
-    }
-}
+globalvar String DoubleTimeIcon = IconString(Icon.Bolt);
+globalvar String SlowDownIcon = IconString(Icon.Bolt);
+globalvar String UltimateFiesta = IconString(Icon.Bolt);
+globalvar Number numberOfEffects = 3;
+playervar Number currentlySelectedMenuID = 0;
 
- rule: "Player Controller"
+// first time setup
+ rule: "Player Controller - Startup Setup"
  Event.OngoingPlayer
  Player.Slot5
+ Team.Team1
+ if (IsGameInProgress() && HasSpawned(EventPlayer()) == false)
+ {
+    // first time setup
+    ForcePlayerHero(EventPlayer(), Hero.Ana);
+    Wait(1);
+    SetStatus(EventPlayer(), null, Status.Invincible, 9999);
+    SetStatus(EventPlayer(), null, Status.PhasedOut, 9999);
+    SetInvisible(EventPlayer(), InvisibleTo.All);
+    SetAbility1Enabled(EventPlayer(), false);
+    SetAbility2Enabled(EventPlayer(), false);
+    SetUltimateAbilityEnabled(EventPlayer(), false);
+    createMenu(EventPlayer(), 0);
+    // Disabling the inspector can improve server load.
+    DisableInspectorRecording();
+
+    CreateHudText(
+            VisibleTo: AllPlayers(),
+            Header   : "Debug Info",
+            Text     : currentlySelectedMenuID,
+            TextColor: Color.SkyBlue,
+        );
+ }
+
+ rule: "Player Controller - Menue and Abilities"
+ Event.OngoingPlayer
+ if (SlotOf(EventPlayer()) ==  5)
+ if (TeamOf(EventPlayer()) ==  Team.Team1)
  {
     Player p = EventPlayer();
-    WaitForHeroSelection(p);
-    
-    // the async! means that the subroutine is called asyncronously, and that if its already executing it will do nothing.
-    while (true)
+    while(true) 
     {
-        if (p.IsButtonHeld(Button.Crouch)) 
+        // set the selected menu's icon and activate effect if primary fireing
+        if (currentlySelectedMenuID == 0) 
         {
-            if (p.IsButtonHeld(Button.PrimaryFire))
+            DoubleTimeIcon = IconString(Icon.Checkmark);
+            SlowDownIcon = IconString(Icon.Bolt);
+            UltimateFiesta = IconString(Icon.Bolt);
+            if (p.IsButtonHeld(Button.PrimaryFire)) 
             {
                 async! DoubleSpeedDoubleDamage(); 
-            } else if (p.IsButtonHeld(Button.SecondaryFire)) 
+            }
+        } else if(currentlySelectedMenuID == 1) 
+        {
+            DoubleTimeIcon = IconString(Icon.Bolt);
+            SlowDownIcon = IconString(Icon.Checkmark);
+            UltimateFiesta = IconString(Icon.Bolt);
+            if (p.IsButtonHeld(Button.PrimaryFire)) 
             {
                 async! SlowMotionLowGravity(); 
-            } else if (p.IsButtonHeld(Button.Ability1)) 
+            }
+        } else if (currentlySelectedMenuID == 2) 
+        {
+            DoubleTimeIcon = IconString(Icon.Bolt);
+            SlowDownIcon = IconString(Icon.Bolt);
+            UltimateFiesta = IconString(Icon.Checkmark);
+            if (p.IsButtonHeld(Button.PrimaryFire)) 
             {
                 async! ForceUltimate(); 
             }
         }
+        handelMenuScrolling();
+        Wait(0.25);
 
-        Wait(0.250);
+            // if (p.IsButtonHeld(Button.Crouch)) 
+            // {
+            //     if (p.IsButtonHeld(Button.PrimaryFire))
+            //     {
+            //         async! DoubleSpeedDoubleDamage(); 
+            //     } else if (p.IsButtonHeld(Button.SecondaryFire)) 
+            //     {
+            //         async! SlowMotionLowGravity(); 
+            //     } else if (p.IsButtonHeld(Button.Ability1)) 
+            //     {
+            //         async! ForceUltimate(); 
+            //     }
+            // }
     }
  }
 
+
+void handelMenuScrolling() 
+{
+    if (EventPlayer().IsButtonHeld(Button.Ability2)) 
+    {
+        currentlySelectedMenuID = currentlySelectedMenuID + 1;
+        if (currentlySelectedMenuID >= numberOfEffects) 
+        {
+            currentlySelectedMenuID = 0;
+        }
+    }
+    if (EventPlayer().IsButtonHeld(Button.Ultimate)) 
+    {
+        currentlySelectedMenuID = currentlySelectedMenuID - 1;
+        if (currentlySelectedMenuID <= -1) 
+        {
+            currentlySelectedMenuID = numberOfEffects - 1;
+        }
+    }
+}
+
+
+void createMenu(Player p, Number selected) 
+{
+    // create a menu
+    //Number[] menuIDs;
+     CreateHudText(
+            VisibleTo: p,
+            Header   : "Double Time",
+            Text     : DoubleTimeIcon,
+            TextColor: Color.SkyBlue,
+        );
+    //menuIDs[0] = LastTextID();
+    CreateHudText(
+            VisibleTo: p,
+            Header   : "Slow Down",
+            Text     : SlowDownIcon,
+            TextColor: Color.SkyBlue
+        );
+    //menuIDs[1] = LastTextID();
+    CreateHudText(
+            VisibleTo: p,
+            Header   : "Ult Fiesta",
+            Text     : UltimateFiesta,
+            TextColor: Color.SkyBlue
+        );
+    //menuIDs[2] = LastTextID();
+}
