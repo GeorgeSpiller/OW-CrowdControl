@@ -1,47 +1,64 @@
-import "DebugGameSettings.json";
-//import "CompetitiveGameSettings.json";  // OSTW lib outdated: "Limit Roles":"1 Tank 2 Offense 2 Support" is a valid config
+//import "DebugGameSettings.json";
+import "CompetitiveGameSettings.json";  // OSTW lib outdated: "Limit Roles":"1 Tank 2 Offense 2 Support" is a valid config
 import "Effects.ostw";
 import "HUDController.ostw";
 
 
-globalvar String DoubleTimeIcon = IconString(Icon.Bolt);
-globalvar String SlowDownIcon = IconString(Icon.Bolt);
-globalvar String UltimateFiesta = IconString(Icon.Bolt);
-globalvar Number numberOfEffects = 3;
+playervar Color Color_DoubleTime = Color.Gray;
+playervar Color Color_SlowDown = Color.Gray;
+playervar Color Color_UltimateFiesta = Color.Gray;
+playervar Color Color_NoClip = Color.Gray;
+playervar Color Color_RandomSize = Color.Gray;
+playervar Number numberOfEffects = 5;
+playervar Player ControlPlayer;
+playervar Boolean hasBeenInstanciated = false;  
+playervar Boolean isNoclipActive = false;
 playervar Number currentlySelectedMenuID = 0;
+
 
 // first time setup
  rule: "Player Controller - Startup Setup"
  Event.OngoingPlayer
- Player.Slot5
- Team.Team1
- if (IsGameInProgress() && HasSpawned(EventPlayer()) == false)
+ if (SlotOf(EventPlayer()) ==  5)
+ if (IsGameInProgress() || IsInSpawnRoom() || IsInSetup())    //  
  {
+    ControlPlayer = EventPlayer();
     // first time setup
-    ForcePlayerHero(EventPlayer(), Hero.Ana);
+    ForcePlayerHero(ControlPlayer, Hero.Ana);
     Wait(1);
-    SetStatus(EventPlayer(), null, Status.Invincible, 9999);
-    SetStatus(EventPlayer(), null, Status.PhasedOut, 9999);
-    SetInvisible(EventPlayer(), InvisibleTo.All);
-    SetAbility1Enabled(EventPlayer(), false);
-    SetAbility2Enabled(EventPlayer(), false);
-    SetUltimateAbilityEnabled(EventPlayer(), false);
-    createMenu(EventPlayer(), 0);
+    SetStatus(ControlPlayer, null, Status.Invincible, 9999);
+    SetStatus(ControlPlayer, null, Status.PhasedOut, 9999);
+    SetInvisible(ControlPlayer, InvisibleTo.All);
+    SetAbility1Enabled(ControlPlayer, false);
+    SetAbility2Enabled(ControlPlayer, false);
+    SetUltimateAbilityEnabled(ControlPlayer, false);
     // Disabling the inspector can improve server load.
     DisableInspectorRecording();
 
-    CreateHudText(
-            VisibleTo: AllPlayers(),
-            Header   : "Debug Info",
-            Text     : currentlySelectedMenuID,
-            TextColor: Color.SkyBlue,
+    // only creat menu on the first run. This function can run again as the coltrol player swaps teams from meteor shower
+    if (!hasBeenInstanciated) 
+    {
+        createMenu(ControlPlayer, 0);
+        
+        // create information HUD text
+        CreateHudText(
+                VisibleTo: ControlPlayer,
+                Header   : IconString(Icon.ExclamationMark),
+                Text     : $"{AbilityIconString(ControlPlayer.Hero(), Button.Ability2)}.............| Move Up\n{AbilityIconString(ControlPlayer.Hero(), Button.PrimaryFire)}..| Activate Effect\n{AbilityIconString(ControlPlayer.Hero(), Button.Ultimate)}............| Move Down",
+                TextColor: Color.SkyBlue,
+                Location : Location.Right,
+                HeaderColor: Color.Blue,
+                Reevaluation:HudTextRev.None
         );
+    }
+
+    hasBeenInstanciated = true;
  }
 
- rule: "Player Controller - Menue and Abilities"
+ rule: "Player Controller - Menue and Abilities" -1 // the -1 sets its priority (lower numbrt = higher priority)
  Event.OngoingPlayer
  if (SlotOf(EventPlayer()) ==  5)
- if (TeamOf(EventPlayer()) ==  Team.Team1)
+ if (!IsDummyBot(EventPlayer()))
  {
     Player p = EventPlayer();
     while(true) 
@@ -49,48 +66,52 @@ playervar Number currentlySelectedMenuID = 0;
         // set the selected menu's icon and activate effect if primary fireing
         if (currentlySelectedMenuID == 0) 
         {
-            DoubleTimeIcon = IconString(Icon.Checkmark);
-            SlowDownIcon = IconString(Icon.Bolt);
-            UltimateFiesta = IconString(Icon.Bolt);
+            Color_RandomSize = Color.Gray;
+            Color_DoubleTime = Color.SkyBlue;
+            Color_SlowDown = Color.Gray;
             if (p.IsButtonHeld(Button.PrimaryFire)) 
             {
                 async! DoubleSpeedDoubleDamage(); 
             }
         } else if(currentlySelectedMenuID == 1) 
         {
-            DoubleTimeIcon = IconString(Icon.Bolt);
-            SlowDownIcon = IconString(Icon.Checkmark);
-            UltimateFiesta = IconString(Icon.Bolt);
+            Color_DoubleTime = Color.Gray;
+            Color_SlowDown = Color.SkyBlue;
+            Color_UltimateFiesta = Color.Gray;
             if (p.IsButtonHeld(Button.PrimaryFire)) 
             {
                 async! SlowMotionLowGravity(); 
             }
         } else if (currentlySelectedMenuID == 2) 
         {
-            DoubleTimeIcon = IconString(Icon.Bolt);
-            SlowDownIcon = IconString(Icon.Bolt);
-            UltimateFiesta = IconString(Icon.Checkmark);
+            Color_SlowDown = Color.Gray;
+            Color_UltimateFiesta = Color.SkyBlue;
+            Color_NoClip = Color.Gray;
             if (p.IsButtonHeld(Button.PrimaryFire)) 
             {
-                async! ForceUltimate(); 
+                async! ForceUltimate();
+            }
+        } else if (currentlySelectedMenuID == 3) 
+        {
+            Color_UltimateFiesta = Color.Gray;
+            Color_NoClip = Color.SkyBlue;
+            Color_RandomSize = Color.Gray;
+            if (p.IsButtonHeld(Button.PrimaryFire)) 
+            {
+                async! NoClip();
+            }
+        } else if (currentlySelectedMenuID == 4) 
+        {
+            Color_NoClip = Color.Gray;
+            Color_RandomSize = Color.SkyBlue;
+            Color_DoubleTime = Color.Gray;
+            if (p.IsButtonHeld(Button.PrimaryFire)) 
+            {
+                async! RandomSizes();
             }
         }
         handelMenuScrolling();
-        Wait(0.25);
-
-            // if (p.IsButtonHeld(Button.Crouch)) 
-            // {
-            //     if (p.IsButtonHeld(Button.PrimaryFire))
-            //     {
-            //         async! DoubleSpeedDoubleDamage(); 
-            //     } else if (p.IsButtonHeld(Button.SecondaryFire)) 
-            //     {
-            //         async! SlowMotionLowGravity(); 
-            //     } else if (p.IsButtonHeld(Button.Ability1)) 
-            //     {
-            //         async! ForceUltimate(); 
-            //     }
-            // }
+        Wait(0.15);
     }
  }
 
@@ -108,7 +129,7 @@ void handelMenuScrolling()
     if (EventPlayer().IsButtonHeld(Button.Ultimate)) 
     {
         currentlySelectedMenuID = currentlySelectedMenuID - 1;
-        if (currentlySelectedMenuID <= -1) 
+        if (currentlySelectedMenuID <= -1)  
         {
             currentlySelectedMenuID = numberOfEffects - 1;
         }
@@ -119,26 +140,39 @@ void handelMenuScrolling()
 void createMenu(Player p, Number selected) 
 {
     // create a menu
-    //Number[] menuIDs;
-     CreateHudText(
+    CreateHudText(
             VisibleTo: p,
             Header   : "Double Time",
-            Text     : DoubleTimeIcon,
-            TextColor: Color.SkyBlue,
+            Text     : " ",
+            HeaderColor: Color_DoubleTime,
+            Reevaluation: HudTextRev.StringAndColor
         );
-    //menuIDs[0] = LastTextID();
     CreateHudText(
             VisibleTo: p,
             Header   : "Slow Down",
-            Text     : SlowDownIcon,
-            TextColor: Color.SkyBlue
+            Text     : " ",
+            HeaderColor: Color_SlowDown,
+            Reevaluation: HudTextRev.StringAndColor
         );
-    //menuIDs[1] = LastTextID();
     CreateHudText(
             VisibleTo: p,
             Header   : "Ult Fiesta",
-            Text     : UltimateFiesta,
-            TextColor: Color.SkyBlue
+            Text     : " ",
+            HeaderColor: Color_UltimateFiesta,
+            Reevaluation: HudTextRev.StringAndColor
         );
-    //menuIDs[2] = LastTextID();
+    CreateHudText(
+            VisibleTo: p,
+            Header   : "NoClip",
+            Text     : " ",
+            HeaderColor: Color_NoClip,
+            Reevaluation: HudTextRev.StringAndColor
+        );
+    CreateHudText(
+            VisibleTo: p,
+            Header   : "Random Sizes",
+            Text     : " ",
+            HeaderColor: Color_RandomSize,
+            Reevaluation: HudTextRev.StringAndColor
+        );
 }

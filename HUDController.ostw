@@ -11,7 +11,7 @@ void EffectText(define seconds, String text)
         Location: Location.Top ,
         SortOrder: 3,
         ProgressBarColor: Color.Aqua,
-        TextColor: Color.Gray,
+        TextColor: Color.Blue,
         Reevaluation: ProgressBarHudEvaluation.Values,
         NonteamSpectators: Spectators.VisibleAlways
     );
@@ -24,16 +24,3 @@ void EffectText(define seconds, String text)
         DestroyProgressBarHudText(ProgressBarID);
     });
 }
-
-
-// void ControllerButtonPressed(Button b) 
-// {
-//     //CreateHudText(
-//     //    VisibleTo: AllPlayers(),
-//     //    Header   : IconString(Icon.Bolt),
-//     //    Text     : text,
-//     //    TextColor: Color.SkyBlue
-//     //);
-//     //define HUDTextID = LastTextID();
-// }
-

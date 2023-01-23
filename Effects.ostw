@@ -1,5 +1,5 @@
 import "HUDController.ostw";
-
+import "Controller.ostw";
 
 void DoubleSpeedDoubleDamage() "Apply Double Speed and Double Damage Action" // Adding ! when calling will do nothing if it is already executing.
 {
@@ -35,31 +35,11 @@ void ForceUltimate() "Apply Force Ultimate Action" // Adding ! when calling will
     {
         currentPlayer = AllPlayers()[i];
         PlayerUltimatePerentages[i] = UltimateChargePercent(currentPlayer);
-        // if player is ech or anna, force look at a relevant target
-        // if (currentPlayer.Hero() == Hero.Echo) 
-        // {
-        //     // get team opposite to echo
-        //     Team t;
-        //     if (TeamOf(currentPlayer) == Team.Team1)
-        //     {
-        //         t = Team.Team2;
-        //     } else 
-        //     {
-        //         t = Team.Team1;
-        //     }
-        //     target = PlayerClosestToReticle(currentPlayer, t);
-        //     StartFacing(currentPlayer, PositionOf(target));
-        // } else if(currentPlayer.Hero() == Hero.Ana) 
-        // {
-        //     StartFacing(currentPlayer, PlayerClosestToReticle(currentPlayer), 200, Relative.ToWorld);
-        // }
     }
-    
     SetUltimateCharge(AllPlayers(), 100);
     PressButton(AllPlayers(), Button.Ultimate);
-    Wait(10);
+    Wait(5);
     PressButton(AllPlayers(), Button.PrimaryFire);
-    StopFacing(AllPlayers());
     // reset the ultimate charge percentate of all players
     for (define i = 0; i < AllPlayers().Length; i++)
     {
@@ -68,31 +48,76 @@ void ForceUltimate() "Apply Force Ultimate Action" // Adding ! when calling will
     }
 }
 
+void NoClip() "NoClip Action" // Adding ! when calling will do nothing if it is already executing.
+{
+    EffectText(10, "NoClip (10s)");
+    isNoclipActive = true;
+    SetGravity(AllPlayers(), 0);
+    DisableMovementCollisionWithEnvironment(AllPlayers(), true);
+    Wait(10);
+    EnableMovementCollisionWithEnvironment(AllPlayers());
+    SetGravity(AllPlayers(), 100);
+    isNoclipActive = false;
+    // foreach player check they are in bounds
+    Player currentPlayer;
+    Number[] OOBTextIds; 
+    Wait(5);
+    for (define i = 0; i < CountOf(AllPlayers()); i++) 
+    {
+        currentPlayer = AllPlayers()[i];
+        if (MagnitudeOf(NearestWalkablePosition(currentPlayer) - PositionOf(currentPlayer)) > 1) 
+        {
+            CreateHudText(
+                VisibleTo: currentPlayer,
+                Header   : IconString(Icon.Warning),
+                Text     : $"You were out of bounds and have my Teleported back in bounds.",
+                HeaderColor: Color.Red,
+                Reevaluation: HudTextRev.StringAndColor
+            );
+            OOBTextIds[i] = LastTextID();
+            Teleport(currentPlayer, NearestWalkablePosition(currentPlayer));
+        }
+    }
+    // message players who were OOB for 5 seconds
+    WaitAsync(5, () => 
+    {
+        for (define i = 0; i < CountOf(OOBTextIds); i++) 
+        {
+            DestroyHudText(OOBTextIds[i]);
+        }
+    });
+}
 
-// void MeteorShower() "Apply Meteor Shower Action" // Spawns Sigma rocks, junkrat promary fire, and tracer bombs 
-// {
-//     EffectText(10, "Meteor Shower");
 
-//     // spawn sigma, junkrat and tracer
-//     CreateDummyBot(Hero.Sigma, Team.Team2 , 5);
+void RandomSizes() "Applies random Sizes Action" // Adding ! when calling will do nothing if it is already executing.
+{
+    EffectText(10, "Random Size");
+    Player currentPlayer;
+    for (define i = 0; i < CountOf(AllPlayers()); i++) 
+    {
+        currentPlayer = AllPlayers()[i];
+        StartScalingPlayer(currentPlayer, RandomReal(0.2, 3), false);
+    }
+    Wait(10);
+    StartScalingPlayer(AllPlayers(), 1, false);
+}
 
-//     // set to invisable/invulnerable
-//     // SetStatus(db_Sigma, null, Status.Invincible, 9999);
-//     // SetStatus(db_Sigma, null, Status.PhasedOut, 9999);
-//     // SetInvisible(db_Sigma, InvisibleTo.All);
 
-// }
-
-
-//  rule: "Bot Meteor Shower Controller"
-//  Event.OngoingPlayer
-//  if (IsDummyBot(EventPlayer()))
-//  if( HeroOf(EventPlayer()) == Hero.Sigma ) 
-//  {
-
-//     Teleport(EventPlayer(), ObjectivePosition());
-//     SetUltimateCharge(EventPlayer(), 100);
-//     PressButton(EventPlayer(), Button.Ultimate);
-//     Wait(5, WaitBehavior.IgnoreCondition);
-
-//  }
+rule: "Apply Noclip Impulse" 
+ Event.OngoingPlayer
+ if (isNoclipActive)
+ {
+    while(isNoclipActive) 
+    {
+        if (IsButtonHeld(EventPlayer(), Button.Jump)) 
+        {
+            ApplyImpulse(EventPlayer(), Vector(0, 1, 0), 1, Relative.ToPlayer, ContraryMotion.Incorporate);
+        }
+        if (IsButtonHeld(EventPlayer(), Button.Crouch)) 
+        {
+            ApplyImpulse(EventPlayer(), Vector(0, -1, 0), 1, Relative.ToPlayer, ContraryMotion.Incorporate);
+        }
+        
+        Wait(0.1);
+    }
+ }

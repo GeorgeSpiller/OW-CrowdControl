@@ -15,3 +15,202 @@ rule: "Setup"
 }
 
  
+void MeteorShower() "Apply Meteor Shower Action" // Spawns Sigma rocks, junkrat promary fire, and tracer bombs 
+{
+    EffectText(10, "Meteor Shower");
+
+    Player dummyBot = createMeteorBot( OppositeTeamOf(ControlPlayer.Team()) );
+    Team targetTeam = OppositeTeamOf(TeamOf(dummyBot));
+    WaitAsync(5, () => 
+    {   // after 5 seconds destry dummy bot
+        DestroyAllDummyBots();
+    });
+    while(IsDummyBot(dummyBot)) 
+    {
+        PerformDummyBotActions(targetTeam, dummyBot);
+        Wait(0.1);
+    }
+
+    // swap control player team and repeat bot actions or opposing team
+    MovePlayerToTeam(ControlPlayer, OppositeTeamOf(ControlPlayer.Team()), 5);
+
+    dummyBot = createMeteorBot( OppositeTeamOf(ControlPlayer.Team()) );
+    targetTeam = OppositeTeamOf(TeamOf(dummyBot));
+    WaitAsync(5, () => 
+    {   // after 5 seconds destry dummy bot
+        DestroyAllDummyBots();
+    });
+    while(IsDummyBot(dummyBot)) 
+    {
+        PerformDummyBotActions(targetTeam, dummyBot);
+        Wait(0.1);
+    }
+
+    // swap control player team and repeat bot actions or opposing team
+    MovePlayerToTeam(ControlPlayer, OppositeTeamOf(ControlPlayer.Team()), 5);
+}
+
+
+Player createMeteorBot(Team t) 
+{
+    // spawn sigma, junkrat and tracer
+    CreateDummyBot(Hero.Tracer, t , 5, ControlPlayer, ControlPlayer);
+    Player dummyBot = getDummyBot();
+
+    // set to invisable/invulnerable
+    SetStatus(dummyBot, null, Status.Invincible, 9999);
+    SetStatus(dummyBot, null, Status.PhasedOut, 9999);
+    // SetInvisible(db_Sigma, InvisibleTo.All);
+    SetGravity(dummyBot, 0);
+    return dummyBot;
+}
+
+void PerformDummyBotActions(Team t, Player dummyBot) 
+{
+    Player currTarget;
+    for (define i = 0; CountOf(AllPlayers(t)); 1) 
+    {
+        currTarget = AllPlayers()[i];
+        Teleport(dummyBot, PositionOf(currTarget) + Vector(0, 20, 0));
+        SetFacing(dummyBot, Vector(RandomReal(-0.1, 0.1), -1, RandomReal(-0.1, 0.1)), Relative.ToPlayer);
+
+        // SetAbilityResource(dummyBot, Button.Ability2, 100);
+        // SetAbilityCooldown(dummyBot, Button.Ability2, 0);
+        // PressButton(dummyBot, Button.Ability2);
+
+        SetUltimateCharge(dummyBot, 100);
+        PressButton(dummyBot, Button.Ultimate);
+
+    }
+    Wait(1);
+}
+Player getDummyBot() 
+{
+    for (define i = 0; CountOf(AllPlayers()); 1)
+    {
+        if (IsDummyBot(AllPlayers()[i])) 
+        {
+            return AllPlayers()[i];
+        }
+    }
+    return null;
+}
+
+
+
+
+void RandomSizes() "Applies random Sizes Action" // Adding ! when calling will do nothing if it is already executing.
+{
+    // EffectText(10, "Random Size");
+    // Player currentPlayer;
+    // for (define i = 0; i < CountOf(AllPlayers()); i++) 
+    // {
+    //     currentPlayer = AllPlayers()[i];
+    //     StartScalingPlayer(currentPlayer, RandomReal(0.2, 2), false);
+    // }
+    // Wait(10);
+    // StartScalingPlayer(AllPlayers(), 1, false);
+
+    // Store player scales as vectors to save space;
+    // Team 1 slot 0, 1, 2 are V(x, y, z)
+    // Team 1 slot 3, 4, 5 are V(x, y, z)
+    // Team 2 slot 0, 1, 2 are V(x, y, z)
+    // Team 2 slot 3, 4 are V(x, y)
+
+    Number minSize = 0.2;
+    Number maxSize = 2.0;
+
+    Vector Team1_012 = Vector(1, 1, 1);
+    Vector Team1_345 = Vector(1, 1, 1);
+    Vector Team2_012 = Vector(1, 1, 1);
+    Vector Team2_34 = Vector(1, 1, 1);
+
+    CreateHudText(
+            VisibleTo: AllPlayers(),
+            Header   : "Team1_012",
+            Text     : Team1_012,
+            Reevaluation: HudTextRev.String
+        );
+    CreateHudText(
+            VisibleTo: AllPlayers(),
+            Header   : "Team1_345",
+            Text     : Team1_345,
+            Reevaluation: HudTextRev.String
+        );
+    CreateHudText(
+            VisibleTo: AllPlayers(),
+            Header   : "Team2_012",
+            Text     : Team2_012,
+            Reevaluation: HudTextRev.String
+        );
+    CreateHudText(
+            VisibleTo: AllPlayers(),
+            Header   : "Team2_34",
+            Text     : Team2_34,
+            Reevaluation: HudTextRev.String
+        );
+    
+    EffectText(14, "Random Size (10s)");
+    // interpolate player sizes over 2 seconds to new, random size
+    ChaseVariableOverTime(Team1_012, Vector(RandomReal(minSize, maxSize), RandomReal(minSize, maxSize), RandomReal(minSize, maxSize)), 2, TimeChaseReevaluation.None);
+    ChaseVariableOverTime(Team1_345, Vector(RandomReal(minSize, maxSize), RandomReal(minSize, maxSize), RandomReal(minSize, maxSize)), 2, TimeChaseReevaluation.None);
+    ChaseVariableOverTime(Team2_012, Vector(RandomReal(minSize, maxSize), RandomReal(minSize, maxSize), RandomReal(minSize, maxSize)), 2, TimeChaseReevaluation.None);
+    ChaseVariableOverTime(Team2_34, Vector(RandomReal(minSize, maxSize), RandomReal(minSize, maxSize), RandomReal(minSize, maxSize)), 2, TimeChaseReevaluation.None);
+
+    // set player sizes
+    Player currentPlayer;
+    for (define i = 0; i < CountOf(AllPlayers()); i++) 
+    {
+        currentPlayer = AllPlayers()[i];
+        if (i >= 0 && i <=2) 
+        {
+            StartScalingPlayer(currentPlayer, Team1_012[ i % 3 ], true);
+        } else if (i >=3 && i <= 5)
+        { 
+            StartScalingPlayer(currentPlayer, Team1_345[ i % 3 ], true);
+        }
+        if (i >= 6 && i <= 8) 
+        { 
+            StartScalingPlayer(currentPlayer, Team2_012[ i % 3 ], true);
+        }
+        if (i == 9) 
+        {
+            StartScalingPlayer(currentPlayer, Team2_34[ i % 3 ], true);
+        }
+        // StartScalingPlayer(currentPlayer, currentPlayerScalarList[ i % 3 ], true);
+        Wait(1);
+    }
+
+    Wait(12);
+    
+    // interpolate player sizes over 2 seconds to original size
+    ChaseVariableOverTime(Team1_012, Vector(1, 1, 1), 2, TimeChaseReevaluation.None);
+    ChaseVariableOverTime(Team1_345, Vector(1, 1, 1), 2, TimeChaseReevaluation.None);
+    ChaseVariableOverTime(Team2_012, Vector(1, 1, 1), 2, TimeChaseReevaluation.None);
+    ChaseVariableOverTime(Team2_34, Vector(1, 1, 1), 2, TimeChaseReevaluation.None);
+    
+    // set player sizes
+    for (define i = 0; i < CountOf(AllPlayers()); i++) 
+    {
+        currentPlayer = AllPlayers()[i];
+        if (i >= 0 && i <=2) 
+        {
+            StartScalingPlayer(currentPlayer, Team1_012[ i % 3 ], true);
+        } else if (i >=3 && i <= 5)
+        { 
+            StartScalingPlayer(currentPlayer, Team1_345[ i % 3 ], true);
+        }
+        if (i >= 6 && i <= 8) 
+        { 
+            StartScalingPlayer(currentPlayer, Team2_012[ i % 3 ], true);
+        }
+        if (i == 9) 
+        {
+            StartScalingPlayer(currentPlayer, Team2_34[ i % 3 ], true);
+        }
+        // StartScalingPlayer(currentPlayer, currentPlayerScalarList[ i % 3 ], true);
+        Wait(1);
+    }
+
+    Wait(2);
+}
