@@ -40,5 +40,5 @@
         "Max Team 2 Players": 5,
         "Pause Game On Player Disconnect": true
     },
-    "Description": "Test Workshop Code!"
+    "Description": "Overwatch Croud Control by TheFabiest and Spaggettiohs (Arena 51 Gaming). The Control player who inputs effects should always be in slot 5 (last slot) of team 1."
 }
