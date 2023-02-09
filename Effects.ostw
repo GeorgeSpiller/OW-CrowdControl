@@ -70,7 +70,7 @@ void NoClip() "NoClip Action" // Adding ! when calling will do nothing if it is 
             CreateHudText(
                 VisibleTo: currentPlayer,
                 Header   : IconString(Icon.Warning),
-                Text     : $"You were out of bounds and have my Teleported back in bounds.",
+                Text     : $"You were out of bounds and have been teleported back in bounds.",
                 HeaderColor: Color.Red,
                 Reevaluation: HudTextRev.StringAndColor
             );

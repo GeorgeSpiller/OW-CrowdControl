@@ -44,7 +44,7 @@ playervar Number currentlySelectedMenuID = 0;
         CreateHudText(
                 VisibleTo: ControlPlayer,
                 Header   : IconString(Icon.ExclamationMark),
-                Text     : $"{AbilityIconString(ControlPlayer.Hero(), Button.Ability2)}.............| Move Up\n{AbilityIconString(ControlPlayer.Hero(), Button.PrimaryFire)}..| Activate Effect\n{AbilityIconString(ControlPlayer.Hero(), Button.Ultimate)}............| Move Down",
+                Text     : $"{AbilityIconString(ControlPlayer.Hero(), Button.Ability2)}.............| Move Down\n{AbilityIconString(ControlPlayer.Hero(), Button.PrimaryFire)}..| Activate Effect\n{AbilityIconString(ControlPlayer.Hero(), Button.Ultimate)}............| Move Up",
                 TextColor: Color.SkyBlue,
                 Location : Location.Right,
                 HeaderColor: Color.Blue,
