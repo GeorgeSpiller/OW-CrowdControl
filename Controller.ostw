@@ -3,6 +3,7 @@ import "CompetitiveGameSettings.json";  // OSTW lib outdated: "Limit Roles":"1 T
 import "Effects.ostw";
 import "HUDController.ostw";
 
+// CODE: X7872
 
 playervar Color Color_DoubleTime = Color.Gray;
 playervar Color Color_SlowDown = Color.Gray;
@@ -12,7 +13,7 @@ playervar Color Color_RandomSize = Color.Gray;
 playervar Number numberOfEffects = 5;
 playervar Player ControlPlayer;
 playervar Boolean hasBeenInstanciated = false;  
-playervar Boolean isNoclipActive = false;
+globalvar Boolean isNoclipActive = false;
 playervar Number currentlySelectedMenuID = 0;
 
 
@@ -135,6 +136,23 @@ void handelMenuScrolling()
         }
     }
 }
+
+ rule: "Player Controller - reset"
+ Event.OngoingPlayer
+ if (SlotOf(EventPlayer()) !=  5)
+ if (IsGameInProgress())
+ {
+    Player NonControlPlayer = EventPlayer();
+    // first time setup
+    StopForcingHero(ControlPlayer);
+    ClearStatus(NonControlPlayer, Status.Invincible);
+    ClearStatus(NonControlPlayer, Status.PhasedOut);
+    SetInvisible(NonControlPlayer, InvisibleTo.None);
+    SetAbility1Enabled(NonControlPlayer, true);
+    SetAbility2Enabled(NonControlPlayer, true);
+    SetUltimateAbilityEnabled(NonControlPlayer, true);
+ }
+
 
 
 void createMenu(Player p, Number selected) 
