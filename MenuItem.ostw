@@ -1,0 +1,41 @@
+class MenuItem
+{
+    () => void EffectAction;
+    Color HUDTextColor;
+
+    public constructor(in () => void effectaction)
+    {
+        EffectAction = effectaction;
+        HUDTextColor = Color.Gray;
+    }
+
+
+    public void runEffectAction() 
+    {
+        EffectAction();
+    }
+
+
+    public void setActive(Boolean isSelected) 
+    {
+        if (isSelected) 
+        {
+            HUDTextColor = Color.SkyBlue;
+        } else 
+        {
+            HUDTextColor = Color.Gray;
+        }
+    }
+
+
+    Color getCurrentHUDColor() 
+    {
+        return HUDTextColor;
+    }
+
+    void setCurrentHUDColor(Color c) 
+    {
+        HUDTextColor = c;
+    }
+
+}

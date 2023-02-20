@@ -2,18 +2,27 @@
 import "CompetitiveGameSettings.json";
 import "Effects.ostw";
 import "HUDController.ostw";
+import "MenuItem.ostw";
 
 // CODE:
 // v1.0: X7872
 // v1.2: 099VT
 
+// Enabled/dissabled effects
+playervar Boolean Enable_DoubleTime = true;
+playervar Boolean Enable_SlowDown = false;
+playervar Boolean Enable_UltimateFiesta = true;
+playervar Boolean Enable_NoClip = true;
+playervar Boolean Enable_RandomSize = true;
+
+// Controller HUD effect colors
 playervar Color Color_NULL = Color.Gray;
 playervar Color Color_DoubleTime = Color.Gray;
 playervar Color Color_SlowDown = Color.Gray;
 playervar Color Color_UltimateFiesta = Color.Gray;
 playervar Color Color_NoClip = Color.Gray;
 playervar Color Color_RandomSize = Color.Gray;
-playervar Number numberOfEffects = 6;
+playervar MenuItem[] menuUtems;    // this is set in rule: "Player Controller - Startup Setup" by calling createMenu()
 playervar Player ControlPlayer;
 playervar Boolean hasBeenInstanciated = false;  
 globalvar Boolean isNoclipActive = false;
@@ -64,61 +73,10 @@ playervar Number currentlySelectedMenuID = 0;
  if (SlotOf(EventPlayer()) ==  5)
  {
     Player p = EventPlayer();
+    // get a list of all the available effects
     while(true) 
     {
-        // set the selected menu's icon and activate effect if primary fireing
-        if (currentlySelectedMenuID == 0) 
-        {
-            Color_RandomSize = Color.Gray;
-            Color_NULL = Color.SkyBlue;
-            Color_DoubleTime = Color.Gray;
-        } 
-        else if (currentlySelectedMenuID == 1) 
-        {
-            Color_NULL = Color.Gray;
-            Color_DoubleTime = Color.SkyBlue;
-            Color_SlowDown = Color.Gray;
-            if (p.IsButtonHeld(Button.PrimaryFire)) 
-            {
-                async! DoubleSpeedDoubleDamage(); 
-            }
-        } else if(currentlySelectedMenuID == 2) 
-        {
-            Color_DoubleTime = Color.Gray;
-            Color_SlowDown = Color.SkyBlue;
-            Color_UltimateFiesta = Color.Gray;
-            if (p.IsButtonHeld(Button.PrimaryFire)) 
-            {
-                async! SlowMotionLowGravity(); 
-            }
-        } else if (currentlySelectedMenuID == 3) 
-        {
-            Color_SlowDown = Color.Gray;
-            Color_UltimateFiesta = Color.SkyBlue;
-            Color_NoClip = Color.Gray;
-            if (p.IsButtonHeld(Button.PrimaryFire)) 
-            {
-                async! ForceUltimate();
-            }
-        } else if (currentlySelectedMenuID == 4) 
-        {
-            Color_UltimateFiesta = Color.Gray;
-            Color_NoClip = Color.SkyBlue;
-            Color_RandomSize = Color.Gray;
-            if (p.IsButtonHeld(Button.PrimaryFire)) 
-            {
-                async! NoClip();
-            }
-        } else if (currentlySelectedMenuID == 5) 
-        {
-            Color_NoClip = Color.Gray;
-            Color_RandomSize = Color.SkyBlue;
-            Color_NULL = Color.Gray;
-            if (p.IsButtonHeld(Button.PrimaryFire)) 
-            {
-                async! RandomSizes();
-            }
-        }
+        setSelected(currentlySelectedMenuID);
         handelMenuScrolling();
         Wait(0.13);
     }
@@ -146,7 +104,7 @@ void handelMenuScrolling()
     if (EventPlayer().IsButtonHeld(Button.Ability2)) 
     {
         currentlySelectedMenuID = currentlySelectedMenuID + 1;
-        if (currentlySelectedMenuID >= numberOfEffects) 
+        if (currentlySelectedMenuID >= menuUtems.Length) 
         {
             currentlySelectedMenuID = 0;
         }
@@ -156,7 +114,7 @@ void handelMenuScrolling()
         currentlySelectedMenuID = currentlySelectedMenuID - 1;
         if (currentlySelectedMenuID <= -1)  
         {
-            currentlySelectedMenuID = numberOfEffects - 1;
+            currentlySelectedMenuID = menuUtems.Length - 1;
         }
     }
 }
@@ -164,47 +122,84 @@ void handelMenuScrolling()
 
 void createMenu(Player p, Number selected) 
 {
-    // create a menu
-    CreateHudText(
-            VisibleTo: p,
-            Header   : "NULL",
-            Text     : " ",
-            HeaderColor: Color_NULL,
-            Reevaluation: HudTextRev.Color
-        );
-    CreateHudText(
+
+    MenuItem mi_null = new MenuItem(null);
+    menuUtems.Append(mi_null);
+
+    if (Enable_DoubleTime) {
+        MenuItem mi_DoubleTime = new MenuItem(DoubleSpeedDoubleDamage);
+        mi_DoubleTime.setCurrentHUDColor(Color.LimeGreen);
+        menuUtems.Append(mi_DoubleTime);
+        CreateHudText(      
             VisibleTo: p,
             Header   : "Double Time",
-            Text     : " ",
-            HeaderColor: Color_DoubleTime,
+            Text     : $" ",
+            HeaderColor: mi_DoubleTime.getCurrentHUDColor(),
             Reevaluation: HudTextRev.Color
         );
-    CreateHudText(
+    }
+
+    if (Enable_SlowDown) {
+        MenuItem mi_SlowDown = new MenuItem(SlowMotionLowGravity);
+        menuUtems.Append(mi_SlowDown);
+        CreateHudText(      
             VisibleTo: p,
             Header   : "Slow Down",
-            Text     : " ",
-            HeaderColor: Color_SlowDown,
+            Text     : $" ",
+            HeaderColor: mi_SlowDown.getCurrentHUDColor(),
             Reevaluation: HudTextRev.Color
         );
-    CreateHudText(
+    }
+
+    if (Enable_UltimateFiesta) {
+        MenuItem mi_UltimateFiesta = new MenuItem(ForceUltimate);
+        menuUtems.Append(mi_UltimateFiesta);
+        CreateHudText(      
             VisibleTo: p,
-            Header   : "Ult Fiesta",
-            Text     : " ",
-            HeaderColor: Color_UltimateFiesta,
+            Header   : "Ultimate Fiesta",
+            Text     : $" ",
+            HeaderColor: mi_UltimateFiesta.getCurrentHUDColor(),
             Reevaluation: HudTextRev.Color
         );
-    CreateHudText(
+    }
+
+    if (Enable_NoClip) {
+        MenuItem mi_NoClip = new MenuItem(NoClip);
+        menuUtems.Append(mi_NoClip);
+        CreateHudText(      
             VisibleTo: p,
-            Header   : "NoClip",
-            Text     : " ",
-            HeaderColor: Color_NoClip,
+            Header   : "No Clip",
+            Text     : $" ",
+            HeaderColor: mi_NoClip.getCurrentHUDColor(),
             Reevaluation: HudTextRev.Color
         );
-    CreateHudText(
+    }
+
+    if (Enable_RandomSize) {
+        MenuItem mi_RandomSize = new MenuItem(RandomSizes);
+        menuUtems.Append(mi_RandomSize);
+        CreateHudText(      
             VisibleTo: p,
-            Header   : "Random Sizes",
-            Text     : " ",
-            HeaderColor: Color_RandomSize,
+            Header   : "Random Size",
+            Text     : $" ",
+            HeaderColor: mi_RandomSize.getCurrentHUDColor(),
             Reevaluation: HudTextRev.Color
         );
+    }
+}
+
+
+
+void setSelected(Number currSelectedEffect) 
+{
+    Number prevEffectIndex = currSelectedEffect - 1;
+    Number nextEffectIndex = currSelectedEffect + 1;
+    if (prevEffectIndex == -1) {prevEffectIndex = menuUtems.Length - 1; }
+    if (currSelectedEffect == menuUtems.Length) {currSelectedEffect = 0; }
+
+    //menuUtems[prevEffectIndex].setActive(false);
+    menuUtems[currSelectedEffect].setActive(true);
+    menuUtems[currSelectedEffect].setCurrentHUDColor(Color.Aqua);
+    //menuUtems[nextEffectIndex].setActive(false);
+
 }
