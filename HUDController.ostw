@@ -2,7 +2,7 @@
 
 void EffectText(define seconds, String text)
 {
-
+    // create progress bar for each effect
     define ProgressBarCurrentProgress = 100;
     CreateProgressBarHudText(
         VisibleTo: AllPlayers(),
