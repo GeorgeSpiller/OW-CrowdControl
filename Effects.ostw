@@ -36,10 +36,12 @@ void ForceUltimate() "Apply Force Ultimate Action" // Adding ! when calling will
         currentPlayer = AllPlayers()[i];
         PlayerUltimatePerentages[i] = UltimateChargePercent(currentPlayer);
     }
+    Wait(5);
     SetUltimateCharge(AllPlayers(), 100);
     PressButton(AllPlayers(), Button.Ultimate);
-    Wait(5);
+    Wait(1);
     PressButton(AllPlayers(), Button.PrimaryFire);
+
     // reset the ultimate charge percentate of all players
     for (define i = 0; i < AllPlayers().Length; i++)
     {
@@ -51,13 +53,25 @@ void ForceUltimate() "Apply Force Ultimate Action" // Adding ! when calling will
 void NoClip() "NoClip Action" // Adding ! when calling will do nothing if it is already executing.
 {
     EffectText(10, "NoClip (10s)");
-    isNoclipActive = true;
     SetGravity(AllPlayers(), 0);
     DisableMovementCollisionWithEnvironment(AllPlayers(), true);
-    Wait(10);
+    isNoclipActive = true;
+    WaitAsync(10, () => 
+    {
+        isNoclipActive = false;
+    });
+    while (isNoclipActive) {
+    // -- no clip active
+        for (define i = 0; i < CountOf(AllPlayers()); i++) 
+        {
+            Player currentPlayer = AllPlayers()[i];
+            applyNoclipImpulse(currentPlayer);
+        }
+        Wait(0.1);
+    }
+    // -- end of no clip
     EnableMovementCollisionWithEnvironment(AllPlayers());
     SetGravity(AllPlayers(), 100);
-    isNoclipActive = false;
     // foreach player check they are in bounds
     Player currentPlayer;
     Number[] OOBTextIds; 
@@ -65,7 +79,8 @@ void NoClip() "NoClip Action" // Adding ! when calling will do nothing if it is 
     for (define i = 0; i < CountOf(AllPlayers()); i++) 
     {
         currentPlayer = AllPlayers()[i];
-        if (MagnitudeOf(NearestWalkablePosition(currentPlayer) - PositionOf(currentPlayer)) > 1) 
+        if (MagnitudeOf(NearestWalkablePosition(currentPlayer) - PositionOf(currentPlayer)) > 1 || 
+        !IsOnGround(currentPlayer)) 
         {
             CreateHudText(
                 VisibleTo: currentPlayer,
@@ -88,6 +103,18 @@ void NoClip() "NoClip Action" // Adding ! when calling will do nothing if it is 
     });
 }
 
+void applyNoclipImpulse(Player p) "Helper to apply impulse to players who are noclipping"
+{
+    if (IsButtonHeld(p, Button.Jump)) 
+    {
+        ApplyImpulse(p, Vector(0, 1, 0), 1, Relative.ToPlayer, ContraryMotion.Incorporate);
+    }
+    if (IsButtonHeld(p, Button.Crouch)) 
+    {
+        ApplyImpulse(p, Vector(0, -1, 0), 1, Relative.ToPlayer, ContraryMotion.Incorporate);
+    }
+}
+
 
 void RandomSizes() "Applies random Sizes Action" // Adding ! when calling will do nothing if it is already executing.
 {
@@ -101,23 +128,3 @@ void RandomSizes() "Applies random Sizes Action" // Adding ! when calling will d
     Wait(10);
     StartScalingPlayer(AllPlayers(), 1, false);
 }
-
-
-rule: "Apply Noclip Impulse" 
- Event.OngoingPlayer
- if (isNoclipActive)
- {
-    while(isNoclipActive) 
-    {
-        if (IsButtonHeld(EventPlayer(), Button.Jump)) 
-        {
-            ApplyImpulse(EventPlayer(), Vector(0, 1, 0), 1, Relative.ToPlayer, ContraryMotion.Incorporate);
-        }
-        if (IsButtonHeld(EventPlayer(), Button.Crouch)) 
-        {
-            ApplyImpulse(EventPlayer(), Vector(0, -1, 0), 1, Relative.ToPlayer, ContraryMotion.Incorporate);
-        }
-        
-        Wait(0.1);
-    }
- }

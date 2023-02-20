@@ -1,16 +1,19 @@
 //import "DebugGameSettings.json";
-import "CompetitiveGameSettings.json";  // OSTW lib outdated: "Limit Roles":"1 Tank 2 Offense 2 Support" is a valid config
+import "CompetitiveGameSettings.json";
 import "Effects.ostw";
 import "HUDController.ostw";
 
-// CODE: X7872
+// CODE:
+// v1.0: X7872
+// v1.2: 099VT
 
+playervar Color Color_NULL = Color.Gray;
 playervar Color Color_DoubleTime = Color.Gray;
 playervar Color Color_SlowDown = Color.Gray;
 playervar Color Color_UltimateFiesta = Color.Gray;
 playervar Color Color_NoClip = Color.Gray;
 playervar Color Color_RandomSize = Color.Gray;
-playervar Number numberOfEffects = 5;
+playervar Number numberOfEffects = 6;
 playervar Player ControlPlayer;
 playervar Boolean hasBeenInstanciated = false;  
 globalvar Boolean isNoclipActive = false;
@@ -25,7 +28,6 @@ playervar Number currentlySelectedMenuID = 0;
  {
     ControlPlayer = EventPlayer();
     // first time setup
-    ForcePlayerHero(ControlPlayer, Hero.Ana);
     Wait(1);
     SetStatus(ControlPlayer, null, Status.Invincible, 9999);
     SetStatus(ControlPlayer, null, Status.PhasedOut, 9999);
@@ -49,17 +51,17 @@ playervar Number currentlySelectedMenuID = 0;
                 TextColor: Color.SkyBlue,
                 Location : Location.Right,
                 HeaderColor: Color.Blue,
-                Reevaluation:HudTextRev.None
+                Reevaluation:HudTextRev.String
         );
     }
 
     hasBeenInstanciated = true;
  }
 
+
  rule: "Player Controller - Menue and Abilities" -1 // the -1 sets its priority (lower numbrt = higher priority)
  Event.OngoingPlayer
  if (SlotOf(EventPlayer()) ==  5)
- if (!IsDummyBot(EventPlayer()))
  {
     Player p = EventPlayer();
     while(true) 
@@ -68,13 +70,19 @@ playervar Number currentlySelectedMenuID = 0;
         if (currentlySelectedMenuID == 0) 
         {
             Color_RandomSize = Color.Gray;
+            Color_NULL = Color.SkyBlue;
+            Color_DoubleTime = Color.Gray;
+        } 
+        else if (currentlySelectedMenuID == 1) 
+        {
+            Color_NULL = Color.Gray;
             Color_DoubleTime = Color.SkyBlue;
             Color_SlowDown = Color.Gray;
             if (p.IsButtonHeld(Button.PrimaryFire)) 
             {
                 async! DoubleSpeedDoubleDamage(); 
             }
-        } else if(currentlySelectedMenuID == 1) 
+        } else if(currentlySelectedMenuID == 2) 
         {
             Color_DoubleTime = Color.Gray;
             Color_SlowDown = Color.SkyBlue;
@@ -83,7 +91,7 @@ playervar Number currentlySelectedMenuID = 0;
             {
                 async! SlowMotionLowGravity(); 
             }
-        } else if (currentlySelectedMenuID == 2) 
+        } else if (currentlySelectedMenuID == 3) 
         {
             Color_SlowDown = Color.Gray;
             Color_UltimateFiesta = Color.SkyBlue;
@@ -92,7 +100,7 @@ playervar Number currentlySelectedMenuID = 0;
             {
                 async! ForceUltimate();
             }
-        } else if (currentlySelectedMenuID == 3) 
+        } else if (currentlySelectedMenuID == 4) 
         {
             Color_UltimateFiesta = Color.Gray;
             Color_NoClip = Color.SkyBlue;
@@ -101,19 +109,35 @@ playervar Number currentlySelectedMenuID = 0;
             {
                 async! NoClip();
             }
-        } else if (currentlySelectedMenuID == 4) 
+        } else if (currentlySelectedMenuID == 5) 
         {
             Color_NoClip = Color.Gray;
             Color_RandomSize = Color.SkyBlue;
-            Color_DoubleTime = Color.Gray;
+            Color_NULL = Color.Gray;
             if (p.IsButtonHeld(Button.PrimaryFire)) 
             {
                 async! RandomSizes();
             }
         }
         handelMenuScrolling();
-        Wait(0.15);
+        Wait(0.13);
     }
+ }
+
+
+ rule: "Player Controller - reset"
+ Event.OngoingPlayer
+ if (SlotOf(EventPlayer()) !=  5)
+ if (IsGameInProgress())
+ {
+    Player NonControlPlayer = EventPlayer();
+    // first time setup
+    ClearStatus(NonControlPlayer, Status.Invincible);
+    ClearStatus(NonControlPlayer, Status.PhasedOut);
+    SetInvisible(NonControlPlayer, InvisibleTo.None);
+    SetAbility1Enabled(NonControlPlayer, true);
+    SetAbility2Enabled(NonControlPlayer, true);
+    SetUltimateAbilityEnabled(NonControlPlayer, true);
  }
 
 
@@ -137,60 +161,50 @@ void handelMenuScrolling()
     }
 }
 
- rule: "Player Controller - reset"
- Event.OngoingPlayer
- if (SlotOf(EventPlayer()) !=  5)
- if (IsGameInProgress())
- {
-    Player NonControlPlayer = EventPlayer();
-    // first time setup
-    StopForcingHero(ControlPlayer);
-    ClearStatus(NonControlPlayer, Status.Invincible);
-    ClearStatus(NonControlPlayer, Status.PhasedOut);
-    SetInvisible(NonControlPlayer, InvisibleTo.None);
-    SetAbility1Enabled(NonControlPlayer, true);
-    SetAbility2Enabled(NonControlPlayer, true);
-    SetUltimateAbilityEnabled(NonControlPlayer, true);
- }
-
-
 
 void createMenu(Player p, Number selected) 
 {
     // create a menu
     CreateHudText(
             VisibleTo: p,
+            Header   : "NULL",
+            Text     : " ",
+            HeaderColor: Color_NULL,
+            Reevaluation: HudTextRev.Color
+        );
+    CreateHudText(
+            VisibleTo: p,
             Header   : "Double Time",
             Text     : " ",
             HeaderColor: Color_DoubleTime,
-            Reevaluation: HudTextRev.StringAndColor
+            Reevaluation: HudTextRev.Color
         );
     CreateHudText(
             VisibleTo: p,
             Header   : "Slow Down",
             Text     : " ",
             HeaderColor: Color_SlowDown,
-            Reevaluation: HudTextRev.StringAndColor
+            Reevaluation: HudTextRev.Color
         );
     CreateHudText(
             VisibleTo: p,
             Header   : "Ult Fiesta",
             Text     : " ",
             HeaderColor: Color_UltimateFiesta,
-            Reevaluation: HudTextRev.StringAndColor
+            Reevaluation: HudTextRev.Color
         );
     CreateHudText(
             VisibleTo: p,
             Header   : "NoClip",
             Text     : " ",
             HeaderColor: Color_NoClip,
-            Reevaluation: HudTextRev.StringAndColor
+            Reevaluation: HudTextRev.Color
         );
     CreateHudText(
             VisibleTo: p,
             Header   : "Random Sizes",
             Text     : " ",
             HeaderColor: Color_RandomSize,
-            Reevaluation: HudTextRev.StringAndColor
+            Reevaluation: HudTextRev.Color
         );
 }

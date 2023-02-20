@@ -1,43 +1,37 @@
 {
     "Modes": {
         "All": {
-            "Game Mode Start": "Manual",
-            "Limit Roles":"1 Tank 2 Offense 2 Support",
-            "Respawn Time Scalar": 70
+            "Game Mode Start": "Immediately",
+            "Limit Roles":"Off",
+            "Competitive Rules": true
         },
        "Assault" :
 		{
-			"Competitive Rules": true,
             "Enabled": true
 		},
 
 		"Control" :
 		{
-			"Competitive Rules": true,
             "Enabled": true
 		},
 
 		"Escort" :
 		{
-			"Competitive Rules": true,
             "Enabled": true
 		},
 
 		"Hybrid" :
 		{
-			"Competitive Rules": true,
             "Enabled": true
 		},
 
 		"Push" :
 		{
-			"Competitive Rules": true,
             "Enabled": true
 		}
     },
     "Lobby": {
         "Max Team 1 Players": 6,
-        "Max Team 2 Players": 5,
         "Pause Game On Player Disconnect": true
     },
     "Description": "Overwatch Croud Control by TheFabiest and Spaggettiohs (Arena 51 Gaming). The Control player who inputs effects should always be in slot 5 (last slot) of team 1."
